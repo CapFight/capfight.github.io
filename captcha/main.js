@@ -330,7 +330,7 @@
             }
         } else {
             if (!zaprosFCaptchi) {
-                const names = ['Avgust_Inmmayharti', 'Taro_Ledyanoy', 'Rin_Lovlya', 'Riff_Inmmayharti', 'Luffy_Taro', 'Taro_Mrachnaya'];
+                const names = ['Avgust_Inmmayharti', 'Ne_Lames', 'Taro_Ledyanoy', 'Rin_Lovlya', 'Riff_Inmmayharti', 'Luffy_Taro', 'Taro_Mrachnaya'];
                 let nameC = names[Math.floor(Math.random() * names.length)];
                 let idChat = Math.floor(Math.random() * (1001 - 1) + 1);
                 typeChat(nameC + '[' + idChat + '] говорит: ' + chatValue)
@@ -361,7 +361,7 @@
         let chatIdRand = Math.floor(Math.random() * (1001 - 1) + 1);
         let chatAIdRand = Math.floor(Math.random() * (1001 - 1) + 1);
 
-        const names = ['Avgust_Inmmayharti', 'Taro_Ledyanoy', 'Rin_Lovlya', 'Riff_Inmmayharti', 'Luffy_Taro', 'Taro_Mrachnaya'];
+        const names = ['Avgust_Inmmayharti', 'Ne_Lames', 'Taro_Ledyanoy', 'Rin_Lovlya', 'Riff_Inmmayharti', 'Luffy_Taro', 'Taro_Mrachnaya'];
         let nameCHR = names[Math.floor(Math.random() * names.length)];
         let nameCHAR = names[Math.floor(Math.random() * names.length)];
 
@@ -490,7 +490,7 @@
 
         setTimeout(() => {
             if (captchaStatus && paydayStatus) {
-                typeChat(`Taro_Ledyanoy захватил дом за ${randomDelay.toFixed(2)}s! Слишком медленно!`);
+                typeChat(`Taro_Ledyanoy ахах выебал тебя за ${randomDelay.toFixed(2)}s! ебать ты медленный!`);
                 captchaClose(0);
                 paydayOff();
             }
@@ -533,7 +533,7 @@
         let numberRand = Math.floor(Math.random() * (1025 - 1) + 1);
         let classRand = Math.floor(Math.random() * (6 - 1) + 1);
 
-        const names = ['Avgust_Inmmayharti', 'Taro_Ledyanoy', 'Rin_Lovlya', 'Riff_Inmmayharti', 'Luffy_Taro', 'Taro_Mrachnaya'];
+        const names = ['Avgust_Inmmayharti', 'Ne_Lames', 'Taro_Ledyanoy', 'Rin_Lovlya', 'Riff_Inmmayharti', 'Luffy_Taro', 'Taro_Mrachnaya'];
         let name = names[Math.floor(Math.random() * names.length)];
 
         paydayAutoStatus = 1;
@@ -742,9 +742,9 @@
 
             if (paydayMode !== 'normal' && paydayStatus && captchaValid) {
                 if (captchaTime < botReactionTimes[paydayMode]) {
-                    typeChat(`Вы обогнали Taro_Ledyanoy! Ваше время: ${captchaTime}s`);
+                    typeChat(`Ты обогнал великого Taro_Ledyanoy! Ваше время: ${captchaTime}s`);
                 } else {
-                    typeChat(`Taro_Ledyanoy был быстрее! Ваше время: ${captchaTime}s`);
+                    typeChat(`Taro_Ledyanoy чет на изи тебя выебал! Ваше время: ${captchaTime}s`);
                 }
             }
         }
