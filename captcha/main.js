@@ -356,78 +356,169 @@
         chatSteps = null;
     }
 
-    function chatStr() {
-        let chatStrValue = Math.floor(Math.random() * (20 - 1) + 1);
-        let chatIdRand = Math.floor(Math.random() * (1001 - 1) + 1);
-        let chatAIdRand = Math.floor(Math.random() * (1001 - 1) + 1);
+function chatStr() {
+    let chatStrValue = Math.floor(Math.random() * (49 - 1) + 1);
+    let chatIdRand = Math.floor(Math.random() * (1001 - 1) + 1);
+    let chatAIdRand = Math.floor(Math.random() * (1001 - 1) + 1);
 
-        const names = ['Avgust_Inmmayharti', 'Ne_Lames', 'Taro_Ledyanoy', 'Rin_Lovlya', 'Riff_Inmmayharti', 'Luffy_Taro', 'Taro_Mrachnaya'];
-        let nameCHR = names[Math.floor(Math.random() * names.length)];
-        let nameCHAR = names[Math.floor(Math.random() * names.length)];
+    const names = ['Avgust_Inmmayharti', 'Ne_Lames', 'Taro_Ledyanoy', 'Rin_Lovlya', 'Riff_Inmmayharti', 'Luffy_Taro', 'Taro_Mrachnaya'];
+    let nameCHR = names[Math.floor(Math.random() * names.length)];
+    let nameCHAR = names[Math.floor(Math.random() * names.length)];
 
-        if (chatStrValue == 1) {
-            typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] на 998 дней. Причина: ЧСП 13-GG');
-        };
-        if (chatStrValue == 2) {
-            typeChat('Объявление: Куплю дом. Звоните 884-88-88. Отправил: ' + nameCHR + '[' + chatIdRand + ']');
-        };
-        if (chatStrValue == 3) {
-            typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю Brabus Rocket GTS с полным тюнингом');
-        };
-        if (chatStrValue == 4) {
-            typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам дом №2861 25ккк');
-        };
-        if (chatStrValue == 5) {
-            typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам дом в Бусаево тел 7777777');
-        };
-        if (chatStrValue == 6) {
-            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Дайте денег');
-        };
-        if (chatStrValue == 7) {
-            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Дайте денег бедному');
-        };
-        if (chatStrValue == 8) {
-            typeChat(nameCHR + '[' + chatIdRand + '] говорит: дайте на пропитание');
-        };
-        if (chatStrValue == 9) {
-            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Оставьте бездомному дедульке немного денег и вам вернется в 10 раз больше');
-        };
-        if (chatStrValue == 10) {
-            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Какой дом слетел в тот пд?');
-        };
-        if (chatStrValue == 11) {
-            typeChat(nameCHR + '[' + chatIdRand + '] говорит: какой бизак слетел то?');
-        };
-        if (chatStrValue == 12) {
-            typeChat(nameCHR + '[' + chatIdRand + '] говорит: АЛО ЧТО ЗА МИСЫ');
-        };
-        if (chatStrValue == 13) {
-            typeChat(nameCHR + '[' + chatIdRand + '] говорит: ХУЕСОС С АХК');
-        };
-        if (chatStrValue == 14) {
-            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто лох + в чат');
-        };
-        if (chatStrValue == 15) {
-            typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам девственность. Звоните');
-        };
-        if (chatStrValue == 16) {
-            typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю дом в Ривере. Бюджет: 500.000.000');
-        };
-        if (chatStrValue == 17) {
-            typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Ищу девушку для с/о. О себе: большой хуй');
-        };
-        if (chatStrValue == 18) {
-            typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам м/ц марки Yamaha R1. Цена договорная');
-        };
-        if (chatStrValue == 19) {
-            typeChat(nameCHR + '[' + chatIdRand + '] говорит: я ебал твой рот бубуубуб');
-        };
+    if (chatStrValue == 1) {
+        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] на 998 дней. Причина: ЧСП 13-GG');
+    };
+    if (chatStrValue == 2) {
+        typeChat('Объявление: Куплю дом. Звоните 884-88-88. Отправил: ' + nameCHR + '[' + chatIdRand + ']');
+    };
+    if (chatStrValue == 3) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю Brabus Rocket GTS с полным тюнингом');
+    };
+    if (chatStrValue == 4) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам дом №2861 25ккк');
+    };
+    if (chatStrValue == 5) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам дом в Бусаево тел 7777777');
+    };
+    if (chatStrValue == 6) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Дайте денег');
+    };
+    if (chatStrValue == 7) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Дайте денег бедному');
+    };
+    if (chatStrValue == 8) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: дайте на пропитание');
+    };
+    if (chatStrValue == 9) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Оставьте бездомному дедульке немного денег и вам вернется в 10 раз больше');
+    };
+    if (chatStrValue == 10) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Какой дом слетел в тот пд?');
+    };
+    if (chatStrValue == 11) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: какой бизак слетел то?');
+    };
+    if (chatStrValue == 12) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: АЛО ЧТО ЗА МИСЫ');
+    };
+    if (chatStrValue == 13) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: ХУЕСОС С АХК');
+    };
+    if (chatStrValue == 14) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто лох + в чат');
+    };
+    if (chatStrValue == 15) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам девственность. Звоните');
+    };
+    if (chatStrValue == 16) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю дом в Ривере. Бюджет: 500.000.000');
+    };
+    if (chatStrValue == 17) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Ищу девушку для с/о. О себе: большой хуй');
+    };
+    if (chatStrValue == 18) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам м/ц марки Yamaha R1. Цена договорная');
+    };
+    if (chatStrValue == 19) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: я ебал твой рот бубуубуб');
+    };
+    // Новые фразы
+    if (chatStrValue == 20) {
+        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] на 30 дней. Причина: Оскорбление администрации');
+    };
+    if (chatStrValue == 21) {
+        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] на 7 дней. Причина: Масс DM (DeathMatch)');
+    };
+    if (chatStrValue == 22) {
+        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] выдал предупреждение игроку ' + nameCHR + '[' + chatIdRand + ']. Причина: Нецензурная лексика');
+    };
+    if (chatStrValue == 23) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю аккаунт с 100 лвл. Бюджет 1к руб');
+    };
+    if (chatStrValue == 24) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам девушку в рабство. Работает, не грубит');
+    };
+    if (chatStrValue == 25) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: А можно мне админку? Я хорошо себя буду вести');
+    };
+    if (chatStrValue == 26) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Ребята, кто видел мой самолет? Припарковал и пропал');
+    };
+    if (chatStrValue == 27) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Продам гараж с трупом. Цена: 500к. Не спрашивайте чей');
+    };
+    if (chatStrValue == 28) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Ищу работу киллером. Опыт: GTA SA MP');
+    };
+    if (chatStrValue == 29) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Админы спят? Можно немного почитерить?');
+    };
+    if (chatStrValue == 30) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю паспорт гражданина РФ. Цена до 100к');
+    };
+    if (chatStrValue == 31) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто подвезет до больницы? Пулю в жопе носить неудобно');
+    };
+    if (chatStrValue == 32) {
+        typeChat('Объявление: Сниму квартиру без соседей и вопросов. ' + nameCHR + '[' + chatIdRand + ']');
+    };
+    if (chatStrValue == 33) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Продам историю болезней. Коллекционный экземпляр');
+    };
+    if (chatStrValue == 34) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Ищу свидетелей ДТП на проспекте Ленина. Белая BMW');
+    };
+    if (chatStrValue == 35) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: А вы знали, что администраторы - это миф?');
+    };
+    if (chatStrValue == 36) {
+        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] выдал 100.000.000$ игроку ' + nameCHR + '[' + chatIdRand + '] за помощь проекту');
+    };
+    if (chatStrValue == 37) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто-нибудь, заберите моего кота! Он опять на стриме');
+    };
+    if (chatStrValue == 38) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам душу дьяволу. Предложения в лс');
+    };
+    if (chatStrValue == 39) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Нашел чемодан с деньгами. Ищу владельца по приметам: 5кг кокаина внутри');
+    };
+    if (chatStrValue == 40) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю права категории "вертолет". Наличными');
+    };
+    if (chatStrValue == 41) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: А можно я буду играть за полицию? Я уже форму купил');
+    };
+    if (chatStrValue == 42) {
+        typeChat('Объявление: Услуги экзорциста. Изгоняю демонов, админов и прочую нечисть. ' + nameCHR + '[' + chatIdRand + ']');
+    };
+    if (chatStrValue == 43) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Продам секрет бессмертия. Цена: ваша душа');
+    };
+    if (chatStrValue == 44) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Ищу попутчика до Арзамаса. Срочно!');
+    };
+    if (chatStrValue == 45) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто-нибудь, вызовите скорую! У меня икота уже 3 дня');
+    };
+    if (chatStrValue == 46) {
+        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] навсегда. Причина: Слишком умный');
+    };
+    if (chatStrValue == 47) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам историю о том, как я встретил вашу маму');
+    };
+    if (chatStrValue == 48) {
+        typeChat(nameCHR + '[' + chatIdRand + '] говорит: А вы не знаете, как убрать труп из багажника? Друг спрашивает');
+    };
+    if (chatStrValue == 49) {
+        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю алиби на вчерашний вечер. Цена договорная');
+    };
 
-        if (chatGenerator == 1) {
-            let cZaderjka = Math.floor(Math.random() * (4000 - 1500) + 1500);
-            setTimeout(chatStr, cZaderjka)
-        }
+    if (chatGenerator == 1) {
+        let cZaderjka = Math.floor(Math.random() * (4000 - 1500) + 1500);
+        setTimeout(chatStr, cZaderjka)
     }
+}
 
     function chatGen() {
         if (!chatGenerator) {
