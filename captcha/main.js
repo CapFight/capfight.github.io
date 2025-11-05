@@ -24,12 +24,9 @@
     let chatTyped = [];
     let lastValue = 0;
     let chatSteps = null;
-    let changedKey = 0;
     let changedKeyCode = 0;
     let changedKeyName = 0;
     let changedKeyCodeNeed = 0;
-    let keyClicked = 0;
-    let validKey = 0;
     let openCaptchaKeyOne = 69;
     let openCaptchaKeyTwo = 78;
     let modeFcaptchaRequired = 0;
@@ -39,10 +36,6 @@
     let captchaLagStatus = 0;
     let captchaLagHelp = 0;
     let captchaLagWaiting = 0;
-    let zeroCaptchaStatus = 0;
-    let zeroCaptchaHelp = 0;
-    let captchaMinSize = 90;
-    let captchaMaxSize = 140;
     let captchaTimer = -1;
     let firstSymbolTimer = -1;
     let captchaRecord = -1;
@@ -58,20 +51,27 @@
     let autoZeroStatus = 0;
     let firstSymbolTrainingStatus = 0;
     let firstSymbolTrainingHelp = 0;
-    let xxAllFirstSymbolCaptcha = 0;
-    let xxGoodFirstSymbolCaptcha = 0;
-    let xxCounterFirstSymbolInputs = 0;
-    let xxAllFirstSymbolInputs = 0;
+    let xxAllCaptchaNormal = 0;
+    let xxGoodCaptchaNormal = 0;
+    let xxCounterInputsNormal = 0;
+    let xxCounterFirstSymbNormal = 0;
+    let xxAllInputsNormal = 0;
+    let xxAllFirstSymbNormal = 0;
+
+    let xxAllCaptchaFirstSymbol = 0;
+    let xxGoodCaptchaFirstSymbol = 0;
+    let xxCounterInputsFirstSymbol = 0;
+    let xxAllInputsFirstSymbol = 0;
+    let captchaRecordNormal = -1;
+    let captchaRecordFirstSymbol = -1;
 
     function autoZero() {
         if (!autoZeroStatus) {
             autoZeroStatus = 1;
-            zeroCaptchaStatus = 1;
             typeChat('AutoZero включен - капча всегда будет заканчиваться на 0');
             document.getElementById('autoZero').classList.add('btnSelected');
         } else {
             autoZeroStatus = 0;
-            zeroCaptchaStatus = 0;
             typeChat('AutoZero выключен');
             document.getElementById('autoZero').classList.remove('btnSelected');
         }
@@ -92,19 +92,34 @@
 
     function updateStatisticsDisplay() {
         if (firstSymbolTrainingStatus) {
-            let firstSymbolSuccessRate = Math.trunc((parseInt(localStorage.getItem("xxGoodFirstSymbolCaptcha") || "0") / parseInt(localStorage.getItem("xxAllFirstSymbolCaptcha") || "1")) * 100);
+            let firstSymbolSuccessRate = xxAllCaptchaFirstSymbol > 0 ?
+                Math.trunc((xxGoodCaptchaFirstSymbol / xxAllCaptchaFirstSymbol) * 100) : 0;
+
+            let avgFirstSymbolTime = xxCounterInputsFirstSymbol > 0 ?
+                (xxAllInputsFirstSymbol / xxCounterInputsFirstSymbol).toFixed(3) : "0.000";
+
             document.getElementById("goodCaptcha").innerText = `Процент верных 1-х символов: ${firstSymbolSuccessRate}%`;
-
-            let avgFirstSymbolTime = (parseFloat(localStorage.getItem("xxAllFirstSymbolInputs") || "0") / parseInt(localStorage.getItem("xxCounterFirstSymbolInputs") || "1")).toFixed(3);
             document.getElementById("average").innerText = `Средний ввод 1-го символа: ${avgFirstSymbolTime}s`;
-
             document.getElementById("averageFirstSymb").innerText = `Тренировка первого символа`;
-        } else {
-            let successRate = Math.trunc((parseInt(localStorage.getItem("xxGoodCaptcha") || "0") / parseInt(localStorage.getItem("xxAllCaptcha") || "1")) * 100);
-            document.getElementById("goodCaptcha").innerText = `Процент верных капч: ${successRate}%`;
 
-            document.getElementById("average").innerText = `Средний ввод: ${((localStorage.getItem("xxAllInputs") || 0) / (localStorage.getItem("xxCounterInputs") || 1)).toFixed(3)}s`;
-            document.getElementById("averageFirstSymb").innerText = `Средний ввод первого символа: ${((localStorage.getItem("xxAllFirstSymb") || 0) / (localStorage.getItem("xxCounterFirstSymb") || 1)).toFixed(3)}s`;
+            document.getElementById('headlineControl').innerText =
+                captchaRecordFirstSymbol == -1 ? 'Control [--- s]' : `Control [${captchaRecordFirstSymbol} s]`;
+        } else {
+            let successRate = xxAllCaptchaNormal > 0 ?
+                Math.trunc((xxGoodCaptchaNormal / xxAllCaptchaNormal) * 100) : 0;
+
+            let avgInputTime = xxCounterInputsNormal > 0 ?
+                (xxAllInputsNormal / xxCounterInputsNormal).toFixed(3) : "0.000";
+
+            let avgFirstSymbTime = xxCounterFirstSymbNormal > 0 ?
+                (xxAllFirstSymbNormal / xxCounterFirstSymbNormal).toFixed(3) : "0.000";
+
+            document.getElementById("goodCaptcha").innerText = `Процент верных капч: ${successRate}%`;
+            document.getElementById("average").innerText = `Средний ввод: ${avgInputTime}s`;
+            document.getElementById("averageFirstSymb").innerText = `Средний ввод первого символа: ${avgFirstSymbTime}s`;
+
+            document.getElementById('headlineControl').innerText =
+                captchaRecordNormal == -1 ? 'Control [--- s]' : `Control [${captchaRecordNormal} s]`;
         }
     }
 
@@ -137,9 +152,14 @@
     }
 
     function newRecordX() {
-        document.getElementById('headlineControl').innerText = 'Control [' + captchaRecord + ' s]';
+        if (firstSymbolTrainingStatus) {
+            document.getElementById('headlineControl').innerText = 'Control [' + captchaRecordFirstSymbol + ' s]';
+            document.getElementById('recordS').innerHTML = captchaRecordFirstSymbol + ' s';
+        } else {
+            document.getElementById('headlineControl').innerText = 'Control [' + captchaRecordNormal + ' s]';
+            document.getElementById('recordS').innerHTML = captchaRecordNormal + ' s';
+        }
         document.getElementById('record').style.display = 'block';
-        document.getElementById('recordS').innerHTML = captchaRecord + ' s';
         playRecordSound();
         setTimeout(() => {
             document.getElementById('record').style.display = 'none';
@@ -281,31 +301,21 @@
 
     function captchaLag() {
         if (mode < 2) {
-            if (!captchaLagHelp) {
-                if (captchaLagStatus) {
-                    captchaLagStatus = 0;
-                    captchaLagHelp = 1;
-                    typeChat('Выключен режим лагов капчи(симуляция пинга)');
-                    document.getElementById('captchaLag').classList.remove('btnSelected');
-
-                    if (mode == 1) {
-                        document.getElementById('captchaLag').style.display = 'none';
-                    }
+            if (captchaLagStatus) {
+                captchaLagStatus = 0;
+                typeChat('Выключен режим лагов капчи(симуляция пинга)');
+                document.getElementById('captchaLag').classList.remove('btnSelected');
+                if (mode == 1) {
+                    document.getElementById('captchaLag').style.display = 'none';
                 }
-            };
-            if (!captchaLagHelp) {
-                if (!captchaLagStatus) {
-                    captchaLagStatus = 1;
-                    captchaLagHelp = 1;
-                    typeChat('Включен режим лагов капчи(симуляция пинга)');
-                    document.getElementById('captchaLag').classList.add('btnSelected');
-
-                    if (mode == 1) {
-                        document.getElementById('captchaLag').style.display = 'inline-block';
-                    }
+            } else {
+                captchaLagStatus = 1;
+                typeChat('Включен режим лагов капчи(симуляция пинга)');
+                document.getElementById('captchaLag').classList.add('btnSelected');
+                if (mode == 1) {
+                    document.getElementById('captchaLag').style.display = 'inline-block';
                 }
-            };
-            captchaLagHelp = 0
+            }
         } else {
             typeChat('Ошибка режимов');
         }
@@ -322,28 +332,6 @@
         if (!captchaLagStatus) {
             captchaOpen()
         }
-    }
-
-    function zeroCaptchaX() {
-        if (!zeroCaptchaHelp) {
-            if (zeroCaptchaStatus) {
-                zeroCaptchaStatus = 0;
-                autoZeroStatus = 0;
-                zeroCaptchaHelp = 1;
-                typeChat('Капча с окончанием на 0 выключена');
-                document.getElementById('autoZero').classList.remove('btnSelected');
-            }
-        };
-        if (!zeroCaptchaHelp) {
-            if (!zeroCaptchaStatus) {
-                zeroCaptchaStatus = 1;
-                autoZeroStatus = 1;
-                zeroCaptchaHelp = 1;
-                typeChat('Капча с окончанием на 0 включена');
-                document.getElementById('autoZero').classList.add('btnSelected');
-            }
-        };
-        zeroCaptchaHelp = 0
     }
 
     function chatText() {
@@ -875,8 +863,6 @@
             morgen = Math.floor(Math.random() * (10 - 1) + 1);
         } else if (autoZeroStatus) {
             morgen = Math.floor(Math.random() * (10000 - 1000) + 1000) * 10;
-        } else if (autoZeroStatus || zeroCaptchaStatus) {
-            morgen = Math.floor(Math.random() * (10000 - 1000) + 1000) * 10;
         } else {
             morgen = Math.floor(Math.random() * (100000 - 10000) + 10000);
         }
@@ -932,43 +918,49 @@
         let cValue = document.getElementById('shlepacomeback').value;
         let captchaTime = parseFloat(((Date.now() - captchaTimer) / 1000).toFixed(3));
         let captchaData = cValue;
-        if (!localStorage.getItem("xxAllCaptcha")) localStorage.setItem("xxAllCaptcha", "0");
-        if (!localStorage.getItem("xxGoodCaptcha")) localStorage.setItem("xxGoodCaptcha", "0");
-        if (!localStorage.getItem("xxCounterInputs")) localStorage.setItem("xxCounterInputs", "0");
-        if (!localStorage.getItem("xxCounterFirstSymb")) localStorage.setItem("xxCounterFirstSymb", "0");
-        if (!localStorage.getItem("xxAllInputs")) localStorage.setItem("xxAllInputs", "0");
-        if (!localStorage.getItem("xxAllFirstSymb")) localStorage.setItem("xxAllFirstSymb", "0");
+
         if (cType == 1) {
             let expectedCaptcha = morgen + "";
             let userInput = captchaData;
+
             if (firstSymbolTrainingStatus) {
                 captchaValid = (expectedCaptcha[0] == userInput[0]);
-                if (!localStorage.getItem("xxAllFirstSymbolCaptcha")) localStorage.setItem("xxAllFirstSymbolCaptcha", "0");
-                if (!localStorage.getItem("xxGoodFirstSymbolCaptcha")) localStorage.setItem("xxGoodFirstSymbolCaptcha", "0");
-                if (!localStorage.getItem("xxCounterFirstSymbolInputs")) localStorage.setItem("xxCounterFirstSymbolInputs", "0");
-                if (!localStorage.getItem("xxAllFirstSymbolInputs")) localStorage.setItem("xxAllFirstSymbolInputs", "0");
-                let allFirstSymbolCaptcha = parseInt(localStorage.getItem("xxAllFirstSymbolCaptcha")) + 1;
-                localStorage.setItem("xxAllFirstSymbolCaptcha", allFirstSymbolCaptcha);
+
+                xxAllCaptchaFirstSymbol++;
+                localStorage.setItem("xxAllCaptchaFirstSymbol", xxAllCaptchaFirstSymbol);
+
                 if (captchaValid) {
-                    let goodFirstSymbolCaptcha = parseInt(localStorage.getItem("xxGoodFirstSymbolCaptcha")) + 1;
-                    localStorage.setItem("xxGoodFirstSymbolCaptcha", goodFirstSymbolCaptcha);
-                    localStorage.setItem("xxCounterFirstSymbolInputs", parseInt(localStorage.getItem("xxCounterFirstSymbolInputs")) + 1);
-                    localStorage.setItem("xxAllFirstSymbolInputs", parseFloat(localStorage.getItem("xxAllFirstSymbolInputs")) + captchaTime);
+                    xxGoodCaptchaFirstSymbol++;
+                    xxCounterInputsFirstSymbol++;
+                    xxAllInputsFirstSymbol += captchaTime;
+
+                    localStorage.setItem("xxGoodCaptchaFirstSymbol", xxGoodCaptchaFirstSymbol);
+                    localStorage.setItem("xxCounterInputsFirstSymbol", xxCounterInputsFirstSymbol);
+                    localStorage.setItem("xxAllInputsFirstSymbol", xxAllInputsFirstSymbol);
                 }
             } else {
                 captchaValid = (expectedCaptcha == userInput);
-                let allCaptcha = parseInt(localStorage.getItem("xxAllCaptcha")) + 1;
-                localStorage.setItem("xxAllCaptcha", allCaptcha);
+
+                xxAllCaptchaNormal++;
+                localStorage.setItem("xxAllCaptchaNormal", xxAllCaptchaNormal);
+
                 if (captchaValid) {
-                    let goodCaptcha = parseInt(localStorage.getItem("xxGoodCaptcha")) + 1;
-                    localStorage.setItem("xxGoodCaptcha", goodCaptcha);
-                    localStorage.setItem("xxCounterInputs", parseInt(localStorage.getItem("xxCounterInputs")) + 1);
-                    localStorage.setItem("xxCounterFirstSymb", parseInt(localStorage.getItem("xxCounterFirstSymb")) + 1);
-                    localStorage.setItem("xxAllInputs", parseFloat(localStorage.getItem("xxAllInputs")) + captchaTime);
-                    localStorage.setItem("xxAllFirstSymb", parseFloat(localStorage.getItem("xxAllFirstSymb")) + firstSymbol);
+                    xxGoodCaptchaNormal++;
+                    xxCounterInputsNormal++;
+                    xxCounterFirstSymbNormal++;
+                    xxAllInputsNormal += captchaTime;
+                    xxAllFirstSymbNormal += firstSymbol;
+
+                    localStorage.setItem("xxGoodCaptchaNormal", xxGoodCaptchaNormal);
+                    localStorage.setItem("xxCounterInputsNormal", xxCounterInputsNormal);
+                    localStorage.setItem("xxCounterFirstSymbNormal", xxCounterFirstSymbNormal);
+                    localStorage.setItem("xxAllInputsNormal", xxAllInputsNormal);
+                    localStorage.setItem("xxAllFirstSymbNormal", xxAllFirstSymbNormal);
                 }
             }
+
             updateStatisticsDisplay();
+
             if (paydayMode !== 'normal' && paydayStatus && captchaValid) {
                 if (captchaTime < botReactionTimes[paydayMode]) {
                     typeChat(`Ты обогнал великого Taro_Ledyanoy! Ваше время: ${captchaTime}s`);
@@ -976,7 +968,36 @@
                     typeChat(`Taro_Ledyanoy чет на изи тебя выебал! Ваше время: ${captchaTime}s`);
                 }
             }
+
+            let isRecord = false;
+            if (captchaValid) {
+                if (firstSymbolTrainingStatus) {
+                    if (captchaTime < captchaRecordFirstSymbol || captchaRecordFirstSymbol == -1) {
+                        isRecord = true;
+                        captchaRecordFirstSymbol = captchaTime;
+                        localStorage.setItem("captchaRecordFirstSymbol", captchaRecordFirstSymbol);
+                        newRecordX();
+                        recordArr.push(captchaRecordFirstSymbol);
+                    }
+                } else {
+                    if (captchaTime < captchaRecordNormal || captchaRecordNormal == -1) {
+                        isRecord = true;
+                        captchaRecordNormal = captchaTime;
+                        localStorage.setItem("captchaRecordNormal", captchaRecordNormal);
+                        newRecordX();
+                        recordArr.push(captchaRecordNormal);
+                    }
+                }
+            };
+
+            if (firstSymbolTrainingStatus) {
+                let morgenString = morgen + "";
+                typeChat((isRecord ? "[РЕКОРД] " : "") + "Первый символ введен " + (captchaValid ? "" : "не") + "верно (" + morgenString[0] + '|' + (captchaData[0] || 'нет') + ') за ' + captchaTime + "s (первая цифра: " + (firstSymbol != 0 ? firstSymbol + "s" : "нет") + (mode == 1 ? timeReact : "") + ")");
+            } else {
+                typeChat((isRecord ? "[РЕКОРД] " : "") + "Капча введена " + (captchaValid ? "" : "не") + "верно (" + morgen + '|' + captchaData + ') за ' + captchaTime + "s (первая цифра: " + (firstSymbol != 0 ? firstSymbol + "s" : "нет") + (mode == 1 ? timeReact : "") + ")");
+            }
         }
+
         document.getElementsByClassName('captchaDiv')[0].style.display = 'none';
         document.getElementsByClassName('typeDiv')[0].style.display = 'none';
         document.getElementById('shlepacomeback').value = null;
@@ -984,6 +1005,7 @@
         let canvas = document.getElementById("captchaCanvas");
         let ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         if (mode == 1) {
             timeReact = ", открыта за " + reaction + "s";
             paydayOff();
@@ -993,23 +1015,7 @@
                 }
             }
         };
-        if (cType == 1) {
-            let isRecord = false;
-            if (captchaValid) {
-                if (captchaTime < captchaRecord || captchaRecord == -1) {
-                    isRecord = true;
-                    captchaRecord = captchaTime;
-                    newRecordX();
-                    recordArr.push(captchaRecord);
-                }
-            };
-            if (firstSymbolTrainingStatus) {
-                let morgenString = morgen + "";
-                typeChat((isRecord ? "[РЕКОРД] " : "") + "Первый символ введен " + (captchaValid ? "" : "не") + "верно (" + morgenString[0] + '|' + (captchaData[0] || 'нет') + ') за ' + captchaTime + "s (первая цифра: " + (firstSymbol != 0 ? firstSymbol + "s" : "нет") + (mode == 1 ? timeReact : "") + ")");
-            } else {
-                typeChat((isRecord ? "[РЕКОРД] " : "") + "Капча введена " + (captchaValid ? "" : "не") + "верно (" + morgen + '|' + captchaData + ') за ' + captchaTime + "s (первая цифра: " + (firstSymbol != 0 ? firstSymbol + "s" : "нет") + (mode == 1 ? timeReact : "") + ")");
-            }
-        }
+
         firstSymbol = 0;
         if (mode == 2) {
             if (modeFcaptchaRequired) {
@@ -1056,6 +1062,21 @@
         };
     }
     window.onload = function() {
+        xxAllCaptchaNormal = parseInt(localStorage.getItem("xxAllCaptchaNormal") || "0");
+        xxGoodCaptchaNormal = parseInt(localStorage.getItem("xxGoodCaptchaNormal") || "0");
+        xxCounterInputsNormal = parseInt(localStorage.getItem("xxCounterInputsNormal") || "0");
+        xxCounterFirstSymbNormal = parseInt(localStorage.getItem("xxCounterFirstSymbNormal") || "0");
+        xxAllInputsNormal = parseFloat(localStorage.getItem("xxAllInputsNormal") || "0");
+        xxAllFirstSymbNormal = parseFloat(localStorage.getItem("xxAllFirstSymbNormal") || "0");
+
+        xxAllCaptchaFirstSymbol = parseInt(localStorage.getItem("xxAllCaptchaFirstSymbol") || "0");
+        xxGoodCaptchaFirstSymbol = parseInt(localStorage.getItem("xxGoodCaptchaFirstSymbol") || "0");
+        xxCounterInputsFirstSymbol = parseInt(localStorage.getItem("xxCounterInputsFirstSymbol") || "0");
+        xxAllInputsFirstSymbol = parseFloat(localStorage.getItem("xxAllInputsFirstSymbol") || "0");
+
+        captchaRecordNormal = parseFloat(localStorage.getItem("captchaRecordNormal") || "-1");
+        captchaRecordFirstSymbol = parseFloat(localStorage.getItem("captchaRecordFirstSymbol") || "-1");
+
         document.getElementById('openControl').onclick = controlOpen;
         document.getElementById('hideControl').onclick = controlHide;
         document.getElementById('modeN').onclick = modeN;
