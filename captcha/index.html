@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <script>
         Object.defineProperty(CanvasRenderingContext2D.prototype, 'fillText', {
@@ -22,6 +23,7 @@
     <meta property="og:type" content="website">
     <link rel="shortcut icon" href="img/c-pro.png" type="image/png">
 </head>
+
 <body class="dark-theme">
     <div class="container">
         <div class="chat" id="chatVisible">
@@ -32,9 +34,9 @@
                 <input type="text" name="text" id="chatInpt" class="inputChat" disabled>
             </div>
         </div>
-        
+
         <div id="openControl" style="display: none;">+</div>
-        
+
         <div id="control">
             <div id="hideControl">X</div>
             <div id="headlineControl">Control [-.--- s]</div>
@@ -43,45 +45,50 @@
                 <span id="removeMode"></span>
                 <button id="modeN">N / E</button>
                 <button id="modeP">PayDay</button>
-                <div id="paydayModes" style="display:none;">
-                    <button id="paydayModeToggle">Режим ▼</button>
-                    <div id="paydayModeDropdown" style="display:none; position: absolute; background: #1c1c1c; padding: 5px; border-radius: 5px; z-index: 1001;">
-                        <button id="paydayLow">Low</button>
-                        <br>
-                        <button id="paydayMedium">Medium</button>
-                        <br>
-                        <button id="paydayHard">Hard</button>
-                        <br>
-                        <button id="paydayNormal">Normal</button>
-                    </div>
-                </div>
                 <button id="modeF">Fast</button>
+                <button id="autoZero">AutoZero</button>
+                <button id="firstSymbolTrain">1-й символ</button>
                 <button id="captchaLag">Lag</button>
                 <button id="stopP" style="display:none;">Stop</button>
                 <button id="chatGen" style="display:none;">Chat</button>
                 <button id="themeToggle">Тема</button>
             </div>
             <hr>
-            <div id="goodCaptcha">Процент верных капч: 0%</div> 
+            <div id="goodCaptcha">Процент верных капч: 0%</div>
             <div id="average">Средний ввод: 0.000s</div>
             <div id="averageFirstSymb">Средний ввод первого символа: 0.000s</div>
             <div id="changeKey">Изменить кнопку для открытия капчи</div>
         </div>
-        
+
+        <div id="paydayModeContainer" style="display:none; position: absolute; top: 20px; right: calc(2% + 300px); z-index: 1000;">
+            <button id="paydayModeToggle">Режим PayDay ▼</button>
+            <div id="paydayModeDropdown" style="display:none; position: absolute; background: #1c1c1c; padding: 5px; border-radius: 5px; z-index: 1001; top: 100%; left: 0; margin-top: 5px; min-width: 120px;">
+                <button id="paydayLow">Low</button>
+                <br>
+                <button id="paydayMedium">Medium</button>
+                <br>
+                <button id="paydayHard">Hard</button>
+                <br>
+                <button id="paydayNormal">Normal</button>
+            </div>
+        </div>
+
+        <div id="openControl" style="display: none;">+</div>
+
         <div class="captchaDiv" style="display: none;">
             <canvas id="captchaCanvas" width="365" height="100"></canvas>
         </div>
-        
+
         <div class="typeDiv" style="user-select: none; display: none;">
             <div class="headline">Проверка на робота</div>
             <div class="desc">Введите <span>5</span> символов, которые видно на <span>вашем</span> экране</div>
             <div class="enter">
-                <input type="text" name="text" id="megasuperbebra" autocomplete="off" disabled>          
+                <input type="text" name="text" id="shlepacomeback" autocomplete="off" disabled>
                 <button id="send">Принять</button>
                 <button id="cancel">Отмена</button>
             </div>
         </div>
-        
+
         <div class="houseSale" style="left: 43%; top: 50%; z-index: -1; display: none;" id="houseSale">
             <span class="notice" id='notice'>еби ловлю братик</span>
             <div id="homeGos" style="display: none;">
@@ -109,34 +116,34 @@
                 <span>Гараж: [<span id='HSsix' class="red">НЕТ</span>]</span>
             </div>
         </div>
-        
+
         <div class="payday">
             <span id="payday" style="display: none;">PayDay</span>
         </div>
-        
+
         <div class="time" style="display: none;">
             <div class="month">2 november</div>
             <div class="hours">13:00</div>
             <div class="played">played <span class="playedGreen">1 min</span></div>
         </div>
-        
+
         <div id="record" style="display: none;">
             New record <br>
             <span id="recordS">2.01s</span>
         </div>
     </div>
-    
+
     <div class="rights">
         <a href="https://t.me/motorcrycle" target="_blank" style="color: inherit; text-decoration: none;">
             Author: Luffich
         </a>
     </div>
-    
+
     <div class="seo-content" style="display: none;">
         <h1>CapFight - Тренировка капчи для Arizona/Rodina RP</h1>
         <h2>Лучшая треня капчи для SAMP Arizona/Rodina RP</h2>
         <p>CapFight - это профессиональный онлайн сайт для тренировки скорости ввода капчи в Arizona/Rodina RP. Наш сайт поможет вам улучшить навыки ввода капчи с помощью реалистичных симуляторов различных режимов игры.</p>
-        
+
         <h3>Почему выбирают CapFight для тренировки капчи?</h3>
         <ul>
             <li>Реалистичная симуляция капчи Arizona/Rodina RP</li>
@@ -146,18 +153,18 @@
             <li>Режим PayDay для реалистичной практики</li>
             <li>Адаптивный дизайн для всех устройств</li>
         </ul>
-        
+
         <h3>Как улучшить скорость ввода капчи в Arizona/Rodina RP?</h3>
         <p>Регулярные тренировки на CapFight помогут значительно увеличить скорость и точность ввода капчи. Начните с режима Normal и постепенно переходите к более сложным уровням. Отслеживайте свой прогресс через статистику и ставьте новые рекорды.</p>
-        
+
         <h3>Ключевые особенности тренировки капчи</h3>
         <p>Наш сайт включает все популярные режимы Arizona/Rodina RP: стандартная капча, режим PayDay, быстрая капча и режим с задержками. Каждый режим разработан для максимально реалистичной симуляции игровых условий.</p>
-        
+
         <p>CapFight - незаменимый инструмент для каждого игрока Arizona/Rodina RP, который хочет повысить свою эффективность в игре и избежать проблем ввода капчи.</p>
     </div>
-    
+
     <script src="main.js"></script>
-    
+
     <div id="advertisement" style="position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 8px; max-width: 300px; z-index: 1000;">
         <div style="font-weight: bold; margin-bottom: 5px; text-align: center;">РЕКЛАМА! Нажми на баннер</div>
         <a href="https://www.blast.hk/threads/242357/" target="_blank">
@@ -170,4 +177,5 @@
 <audio id="recordSound" preload="auto" style="display:none">
     <source src="mp3/record.mp3" type="audio/mpeg">
 </audio>
+
 </html>
