@@ -55,6 +55,58 @@
     };
     let botAttempts = 0;
     let soundEnabled = true;
+    let autoZeroStatus = 0;
+    let firstSymbolTrainingStatus = 0;
+    let firstSymbolTrainingHelp = 0;
+    let xxAllFirstSymbolCaptcha = 0;
+    let xxGoodFirstSymbolCaptcha = 0;
+    let xxCounterFirstSymbolInputs = 0;
+    let xxAllFirstSymbolInputs = 0;
+
+    function autoZero() {
+        if (!autoZeroStatus) {
+            autoZeroStatus = 1;
+            zeroCaptchaStatus = 1;
+            typeChat('AutoZero включен - капча всегда будет заканчиваться на 0');
+            document.getElementById('autoZero').classList.add('btnSelected');
+        } else {
+            autoZeroStatus = 0;
+            zeroCaptchaStatus = 0;
+            typeChat('AutoZero выключен');
+            document.getElementById('autoZero').classList.remove('btnSelected');
+        }
+    }
+
+    function firstSymbolTraining() {
+        if (!firstSymbolTrainingStatus) {
+            firstSymbolTrainingStatus = 1;
+            typeChat('Тренировка первого символа включена - вводите только первую цифру');
+            document.getElementById('firstSymbolTrain').classList.add('btnSelected');
+        } else {
+            firstSymbolTrainingStatus = 0;
+            typeChat('Тренировка первого символа выключена');
+            document.getElementById('firstSymbolTrain').classList.remove('btnSelected');
+        }
+        updateStatisticsDisplay();
+    }
+
+    function updateStatisticsDisplay() {
+        if (firstSymbolTrainingStatus) {
+            let firstSymbolSuccessRate = Math.trunc((parseInt(localStorage.getItem("xxGoodFirstSymbolCaptcha") || "0") / parseInt(localStorage.getItem("xxAllFirstSymbolCaptcha") || "1")) * 100);
+            document.getElementById("goodCaptcha").innerText = `Процент верных 1-х символов: ${firstSymbolSuccessRate}%`;
+
+            let avgFirstSymbolTime = (parseFloat(localStorage.getItem("xxAllFirstSymbolInputs") || "0") / parseInt(localStorage.getItem("xxCounterFirstSymbolInputs") || "1")).toFixed(3);
+            document.getElementById("average").innerText = `Средний ввод 1-го символа: ${avgFirstSymbolTime}s`;
+
+            document.getElementById("averageFirstSymb").innerText = `Тренировка первого символа`;
+        } else {
+            let successRate = Math.trunc((parseInt(localStorage.getItem("xxGoodCaptcha") || "0") / parseInt(localStorage.getItem("xxAllCaptcha") || "1")) * 100);
+            document.getElementById("goodCaptcha").innerText = `Процент верных капч: ${successRate}%`;
+
+            document.getElementById("average").innerText = `Средний ввод: ${((localStorage.getItem("xxAllInputs") || 0) / (localStorage.getItem("xxCounterInputs") || 1)).toFixed(3)}s`;
+            document.getElementById("averageFirstSymb").innerText = `Средний ввод первого символа: ${((localStorage.getItem("xxAllFirstSymb") || 0) / (localStorage.getItem("xxCounterFirstSymb") || 1)).toFixed(3)}s`;
+        }
+    }
 
     function playRecordSound() {
         if (!soundEnabled) return;
@@ -111,7 +163,21 @@
                 document.getElementById('chatGen').style.display = 'none';
                 document.getElementById('stopP').style.display = 'none';
                 document.getElementById('modeN').classList.add('btnSelected');
-                document.getElementById('paydayModes').style.display = 'none';
+
+                document.getElementById('paydayModeContainer').style.display = 'none';
+
+                document.getElementById('control').classList.remove('payday-mode');
+                document.getElementById('modeF').style.display = 'inline-block';
+                document.getElementById('autoZero').style.display = 'inline-block';
+                document.getElementById('firstSymbolTrain').style.display = 'inline-block';
+                document.getElementById('captchaLag').style.display = 'inline-block';
+
+                if (autoZeroStatus) {
+                    document.getElementById('autoZero').classList.add('btnSelected');
+                } else {
+                    document.getElementById('autoZero').classList.remove('btnSelected');
+                }
+
                 if (mode) {
                     document.getElementById('modeP').classList.remove('btnSelected')
                 };
@@ -138,7 +204,26 @@
             document.getElementById('stopP').style.display = 'inline-block';
             document.getElementById('modeP').classList.add('btnSelected');
 
-            document.getElementById('paydayModes').style.display = 'inline-block';
+            document.getElementById('paydayModeContainer').style.display = 'block';
+
+            document.getElementById('control').classList.add('payday-mode');
+            document.getElementById('modeF').style.display = 'none';
+            document.getElementById('firstSymbolTrain').style.display = 'none';
+
+            document.getElementById('autoZero').style.display = 'inline-block';
+            document.getElementById('captchaLag').style.display = 'inline-block';
+
+            if (autoZeroStatus) {
+                document.getElementById('autoZero').classList.add('btnSelected');
+            } else {
+                document.getElementById('autoZero').classList.remove('btnSelected');
+            }
+
+            if (captchaLagStatus) {
+                document.getElementById('captchaLag').classList.add('btnSelected');
+            } else {
+                document.getElementById('captchaLag').classList.remove('btnSelected');
+            }
 
             if (!mode) {
                 document.getElementById('modeN').classList.remove('btnSelected')
@@ -163,7 +248,21 @@
                 document.getElementById('chatGen').style.display = 'none';
                 document.getElementById('stopP').style.display = 'inline-block';
                 document.getElementById('modeF').classList.add('btnSelected');
-                document.getElementById('paydayModes').style.display = 'none';
+
+                document.getElementById('paydayModeContainer').style.display = 'none';
+
+                document.getElementById('control').classList.remove('payday-mode');
+                document.getElementById('modeF').style.display = 'inline-block';
+                document.getElementById('autoZero').style.display = 'inline-block';
+                document.getElementById('firstSymbolTrain').style.display = 'inline-block';
+                document.getElementById('captchaLag').style.display = 'inline-block';
+
+                if (autoZeroStatus) {
+                    document.getElementById('autoZero').classList.add('btnSelected');
+                } else {
+                    document.getElementById('autoZero').classList.remove('btnSelected');
+                }
+
                 if (!mode) {
                     document.getElementById('modeN').classList.remove('btnSelected')
                 };
@@ -187,7 +286,11 @@
                     captchaLagStatus = 0;
                     captchaLagHelp = 1;
                     typeChat('Выключен режим лагов капчи(симуляция пинга)');
-                    document.getElementById('captchaLag').classList.remove('btnSelected')
+                    document.getElementById('captchaLag').classList.remove('btnSelected');
+
+                    if (mode == 1) {
+                        document.getElementById('captchaLag').style.display = 'none';
+                    }
                 }
             };
             if (!captchaLagHelp) {
@@ -195,7 +298,11 @@
                     captchaLagStatus = 1;
                     captchaLagHelp = 1;
                     typeChat('Включен режим лагов капчи(симуляция пинга)');
-                    document.getElementById('captchaLag').classList.add('btnSelected')
+                    document.getElementById('captchaLag').classList.add('btnSelected');
+
+                    if (mode == 1) {
+                        document.getElementById('captchaLag').style.display = 'inline-block';
+                    }
                 }
             };
             captchaLagHelp = 0
@@ -221,15 +328,19 @@
         if (!zeroCaptchaHelp) {
             if (zeroCaptchaStatus) {
                 zeroCaptchaStatus = 0;
+                autoZeroStatus = 0;
                 zeroCaptchaHelp = 1;
                 typeChat('Капча с окончанием на 0 выключена');
+                document.getElementById('autoZero').classList.remove('btnSelected');
             }
         };
         if (!zeroCaptchaHelp) {
             if (!zeroCaptchaStatus) {
                 zeroCaptchaStatus = 1;
+                autoZeroStatus = 1;
                 zeroCaptchaHelp = 1;
                 typeChat('Капча с окончанием на 0 включена');
+                document.getElementById('autoZero').classList.add('btnSelected');
             }
         };
         zeroCaptchaHelp = 0
@@ -238,9 +349,7 @@
     function chatText() {
         let chatValue = document.getElementById('chatInpt').value;
         if (chatValue.trim() === '') return;
-
         chatTyped.push(chatValue);
-
         if (chatValue[0] == '/') {
             let commandValid = 0;
             if (chatValue == '/time') {
@@ -255,7 +364,7 @@
                 typeChat('/about - о создателе');
                 typeChat('/record - рекорды');
                 typeChat('/clear - очистить чат');
-                typeChat('/zero  - последняя цифра капчи 0');
+                typeChat('/zero - последняя цифра капчи 0 (AutoZero)');
                 typeChat('/theme - сменить тему оформления');
                 typeChat('');
                 commandValid = 1
@@ -265,7 +374,7 @@
                 commandValid = 1
             };
             if (chatValue == '/zero') {
-                zeroCaptchaX();
+                autoZero();
                 commandValid = 1
             };
             if (chatValue == '/about') {
@@ -320,8 +429,7 @@
                         typeChat('Сначала активируйте режим нажатием N')
                     }
                 } else {
-                    if (mode != 0)
-                        typeChat('Данная команда доступна исключительно в режиме N');
+                    if (mode != 0) typeChat('Данная команда доступна исключительно в режиме N');
                 };
                 commandValid = 1
             };
@@ -336,7 +444,6 @@
                 typeChat(nameC + '[' + idChat + '] говорит: ' + chatValue)
             }
         }
-
         document.getElementById('chatInpt').value = '';
     }
 
@@ -356,169 +463,165 @@
         chatSteps = null;
     }
 
-function chatStr() {
-    let chatStrValue = Math.floor(Math.random() * (49 - 1) + 1);
-    let chatIdRand = Math.floor(Math.random() * (1001 - 1) + 1);
-    let chatAIdRand = Math.floor(Math.random() * (1001 - 1) + 1);
-
-    const names = ['Avgust_Inmmayharti', 'Ne_Lames', 'Taro_Ledyanoy', 'Rin_Lovlya', 'Riff_Inmmayharti', 'Luffy_Taro', 'Taro_Mrachnaya'];
-    let nameCHR = names[Math.floor(Math.random() * names.length)];
-    let nameCHAR = names[Math.floor(Math.random() * names.length)];
-
-    if (chatStrValue == 1) {
-        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] на 998 дней. Причина: ЧСП 13-GG');
-    };
-    if (chatStrValue == 2) {
-        typeChat('Объявление: Куплю дом. Звоните 884-88-88. Отправил: ' + nameCHR + '[' + chatIdRand + ']');
-    };
-    if (chatStrValue == 3) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю Brabus Rocket GTS с полным тюнингом');
-    };
-    if (chatStrValue == 4) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам дом №2861 25ккк');
-    };
-    if (chatStrValue == 5) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам дом в Бусаево тел 7777777');
-    };
-    if (chatStrValue == 6) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Дайте денег');
-    };
-    if (chatStrValue == 7) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Дайте денег бедному');
-    };
-    if (chatStrValue == 8) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: дайте на пропитание');
-    };
-    if (chatStrValue == 9) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Оставьте бездомному дедульке немного денег и вам вернется в 10 раз больше');
-    };
-    if (chatStrValue == 10) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Какой дом слетел в тот пд?');
-    };
-    if (chatStrValue == 11) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: какой бизак слетел то?');
-    };
-    if (chatStrValue == 12) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: АЛО ЧТО ЗА МИСЫ');
-    };
-    if (chatStrValue == 13) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: ХУЕСОС С АХК');
-    };
-    if (chatStrValue == 14) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто лох + в чат');
-    };
-    if (chatStrValue == 15) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам девственность. Звоните');
-    };
-    if (chatStrValue == 16) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю дом в Ривере. Бюджет: 500.000.000');
-    };
-    if (chatStrValue == 17) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Ищу девушку для с/о. О себе: большой хуй');
-    };
-    if (chatStrValue == 18) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам м/ц марки Yamaha R1. Цена договорная');
-    };
-    if (chatStrValue == 19) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: я ебал твой рот бубуубуб');
-    };
-    // Новые фразы
-    if (chatStrValue == 20) {
-        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] на 30 дней. Причина: Оскорбление администрации');
-    };
-    if (chatStrValue == 21) {
-        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] на 7 дней. Причина: Масс DM (DeathMatch)');
-    };
-    if (chatStrValue == 22) {
-        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] выдал предупреждение игроку ' + nameCHR + '[' + chatIdRand + ']. Причина: Нецензурная лексика');
-    };
-    if (chatStrValue == 23) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю аккаунт с 100 лвл. Бюджет 1к руб');
-    };
-    if (chatStrValue == 24) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам девушку в рабство. Работает, не грубит');
-    };
-    if (chatStrValue == 25) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: А можно мне админку? Я хорошо себя буду вести');
-    };
-    if (chatStrValue == 26) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Ребята, кто видел мой самолет? Припарковал и пропал');
-    };
-    if (chatStrValue == 27) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Продам гараж с трупом. Цена: 500к. Не спрашивайте чей');
-    };
-    if (chatStrValue == 28) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Ищу работу киллером. Опыт: GTA SA MP');
-    };
-    if (chatStrValue == 29) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Админы спят? Можно немного почитерить?');
-    };
-    if (chatStrValue == 30) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю паспорт гражданина РФ. Цена до 100к');
-    };
-    if (chatStrValue == 31) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто подвезет до больницы? Пулю в жопе носить неудобно');
-    };
-    if (chatStrValue == 32) {
-        typeChat('Объявление: Сниму квартиру без соседей и вопросов. ' + nameCHR + '[' + chatIdRand + ']');
-    };
-    if (chatStrValue == 33) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Продам историю болезней. Коллекционный экземпляр');
-    };
-    if (chatStrValue == 34) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Ищу свидетелей ДТП на проспекте Ленина. Белая BMW');
-    };
-    if (chatStrValue == 35) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: А вы знали, что администраторы - это миф?');
-    };
-    if (chatStrValue == 36) {
-        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] выдал 100.000.000$ игроку ' + nameCHR + '[' + chatIdRand + '] за помощь проекту');
-    };
-    if (chatStrValue == 37) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто-нибудь, заберите моего кота! Он опять на стриме');
-    };
-    if (chatStrValue == 38) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам душу дьяволу. Предложения в лс');
-    };
-    if (chatStrValue == 39) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Нашел чемодан с деньгами. Ищу владельца по приметам: 5кг кокаина внутри');
-    };
-    if (chatStrValue == 40) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю права категории "вертолет". Наличными');
-    };
-    if (chatStrValue == 41) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: А можно я буду играть за полицию? Я уже форму купил');
-    };
-    if (chatStrValue == 42) {
-        typeChat('Объявление: Услуги экзорциста. Изгоняю демонов, админов и прочую нечисть. ' + nameCHR + '[' + chatIdRand + ']');
-    };
-    if (chatStrValue == 43) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Продам секрет бессмертия. Цена: ваша душа');
-    };
-    if (chatStrValue == 44) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Ищу попутчика до Арзамаса. Срочно!');
-    };
-    if (chatStrValue == 45) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто-нибудь, вызовите скорую! У меня икота уже 3 дня');
-    };
-    if (chatStrValue == 46) {
-        typeChat('Администратор ' + nameCHAR + '[' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] навсегда. Причина: Слишком умный');
-    };
-    if (chatStrValue == 47) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Продам историю о том, как я встретил вашу маму');
-    };
-    if (chatStrValue == 48) {
-        typeChat(nameCHR + '[' + chatIdRand + '] говорит: А вы не знаете, как убрать труп из багажника? Друг спрашивает');
-    };
-    if (chatStrValue == 49) {
-        typeChat('[VIP] ' + nameCHR + '[' + chatIdRand + ']: Куплю алиби на вчерашний вечер. Цена договорная');
-    };
-
-    if (chatGenerator == 1) {
-        let cZaderjka = Math.floor(Math.random() * (4000 - 1500) + 1500);
-        setTimeout(chatStr, cZaderjka)
+    function chatStr() {
+        let chatStrValue = Math.floor(Math.random() * (49 - 1) + 1);
+        let chatIdRand = Math.floor(Math.random() * (1001 - 1) + 1);
+        let chatAIdRand = Math.floor(Math.random() * (1001 - 1) + 1);
+        const names = ['Avgust_Inmmayharti', 'Ne_Lames', 'Taro_Ledyanoy', 'Rin_Lovlya', 'Riff_Inmmayharti', 'Luffy_Taro', 'Taro_Mrachnaya'];
+        let nameCHR = names[Math.floor(Math.random() * names.length)];
+        let nameCHAR = names[Math.floor(Math.random() * names.length)];
+        if (chatStrValue == 1) {
+            typeChat('Администратор ' + nameCHAR + ' [' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] на 998 дней. Причина: ЧСП 13-GG');
+        };
+        if (chatStrValue == 2) {
+            typeChat('Объявление: Куплю дом. Звоните 884-88-88. Отправил: ' + nameCHR + ' [' + chatIdRand + ']');
+        };
+        if (chatStrValue == 3) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Куплю Brabus Rocket GTS с полным тюнингом');
+        };
+        if (chatStrValue == 4) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Продам дом №2861 25ккк');
+        };
+        if (chatStrValue == 5) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Продам дом в Бусаево тел 7777777');
+        };
+        if (chatStrValue == 6) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Дайте денег');
+        };
+        if (chatStrValue == 7) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Дайте денег бедному');
+        };
+        if (chatStrValue == 8) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: дайте на пропитание');
+        };
+        if (chatStrValue == 9) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Оставьте бездомному дедульке немного денег и вам вернется в 10 раз больше');
+        };
+        if (chatStrValue == 10) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Какой дом слетел в тот пд?');
+        };
+        if (chatStrValue == 11) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: какой бизак слетел то?');
+        };
+        if (chatStrValue == 12) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: АЛО ЧТО ЗА МИСЫ');
+        };
+        if (chatStrValue == 13) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: ХУЕСОС С АХК');
+        };
+        if (chatStrValue == 14) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто лох + в чат');
+        };
+        if (chatStrValue == 15) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Продам девственность. Звоните');
+        };
+        if (chatStrValue == 16) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Куплю дом в Ривере. Бюджет: 500.000.000');
+        };
+        if (chatStrValue == 17) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Ищу девушку для с/о. О себе: большой хуй');
+        };
+        if (chatStrValue == 18) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Продам м/ц марки Yamaha R1. Цена договорная');
+        };
+        if (chatStrValue == 19) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: я ебал твой рот бубуубуб');
+        };
+        if (chatStrValue == 20) {
+            typeChat('Администратор ' + nameCHAR + ' [' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] на 30 дней. Причина: Оскорбление администрации');
+        };
+        if (chatStrValue == 21) {
+            typeChat('Администратор ' + nameCHAR + ' [' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] на 7 дней. Причина: Масс DM (DeathMatch)');
+        };
+        if (chatStrValue == 22) {
+            typeChat('Администратор ' + nameCHAR + ' [' + chatAIdRand + '] выдал предупреждение игроку ' + nameCHR + '[' + chatIdRand + ']. Причина: Нецензурная лексика');
+        };
+        if (chatStrValue == 23) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Куплю аккаунт с 100 лвл. Бюджет 1к руб');
+        };
+        if (chatStrValue == 24) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Продам девушку в рабство. Работает, не грубит');
+        };
+        if (chatStrValue == 25) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: А можно мне админку? Я хорошо себя буду вести');
+        };
+        if (chatStrValue == 26) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Ребята, кто видел мой самолет? Припарковал и пропал');
+        };
+        if (chatStrValue == 27) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Продам гараж с трупом. Цена: 500к. Не спрашивайте чей');
+        };
+        if (chatStrValue == 28) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Ищу работу киллером. Опыт: GTA SA MP');
+        };
+        if (chatStrValue == 29) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Админы спят? Можно немного почитерить?');
+        };
+        if (chatStrValue == 30) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Куплю паспорт гражданина РФ. Цена до 100к');
+        };
+        if (chatStrValue == 31) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто подвезет до больницы? Пулю в жопе носить неудобно');
+        };
+        if (chatStrValue == 32) {
+            typeChat('Объявление: Сниму квартиру без соседей и вопросов. ' + nameCHR + ' [' + chatIdRand + ']');
+        };
+        if (chatStrValue == 33) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Продам историю болезней. Коллекционный экземпляр');
+        };
+        if (chatStrValue == 34) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Ищу свидетелей ДТП на проспекте Ленина. Белая BMW');
+        };
+        if (chatStrValue == 35) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: А вы знали, что администраторы - это миф?');
+        };
+        if (chatStrValue == 36) {
+            typeChat('Администратор ' + nameCHAR + ' [' + chatAIdRand + '] выдал 100.000.000$ игроку ' + nameCHR + '[' + chatIdRand + '] за помощь проекту');
+        };
+        if (chatStrValue == 37) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто-нибудь, заберите моего кота! Он опять на стриме');
+        };
+        if (chatStrValue == 38) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Продам душу дьяволу. Предложения в лс');
+        };
+        if (chatStrValue == 39) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Нашел чемодан с деньгами. Ищу владельца по приметам: 5кг кокаина внутри');
+        };
+        if (chatStrValue == 40) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Куплю права категории "вертолет". Наличными');
+        };
+        if (chatStrValue == 41) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: А можно я буду играть за полицию? Я уже форму купил');
+        };
+        if (chatStrValue == 42) {
+            typeChat('Объявление: Услуги экзорциста. Изгоняю демонов, админов и прочую нечисть. ' + nameCHR + ' [' + chatIdRand + ']');
+        };
+        if (chatStrValue == 43) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Продам секрет бессмертия. Цена: ваша душа');
+        };
+        if (chatStrValue == 44) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Ищу попутчика до Арзамаса. Срочно!');
+        };
+        if (chatStrValue == 45) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: Кто-нибудь, вызовите скорую! У меня икота уже 3 дня');
+        };
+        if (chatStrValue == 46) {
+            typeChat('Администратор ' + nameCHAR + ' [' + chatAIdRand + '] забанил игрока ' + nameCHR + '[' + chatIdRand + '] навсегда. Причина: Слишком умный');
+        };
+        if (chatStrValue == 47) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Продам историю о том, как я встретил вашу маму');
+        };
+        if (chatStrValue == 48) {
+            typeChat(nameCHR + '[' + chatIdRand + '] говорит: А вы не знаете, как убрать труп из багажника? Друг спрашивает');
+        };
+        if (chatStrValue == 49) {
+            typeChat('[VIP] ' + nameCHR + ' [' + chatIdRand + ']: Куплю алиби на вчерашний вечер. Цена договорная');
+        };
+        if (chatGenerator == 1) {
+            let cZaderjka = Math.floor(Math.random() * (4000 - 1500) + 1500);
+            setTimeout(chatStr, cZaderjka)
+        }
     }
-}
 
     function chatGen() {
         if (!chatGenerator) {
@@ -540,9 +643,7 @@ function chatStr() {
         let dMin = date.getMinutes();
         let dDate = date.getDate();
         let dMonth = date.getMonth();
-
         let months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
-
         document.getElementsByClassName('month')[0].innerHTML = dDate + ' ' + months[dMonth];
         document.getElementsByClassName('hours')[0].innerHTML = dHours + ':' + (dMin < 10 ? '0' + dMin : dMin);
         document.getElementsByClassName('playedGreen')[0].innerHTML = timePlayed + ' min';
@@ -600,17 +701,20 @@ function chatStr() {
     document.addEventListener('click', function(event) {
         var dropdown = document.getElementById('paydayModeDropdown');
         var toggleBtn = document.getElementById('paydayModeToggle');
+        var container = document.getElementById('paydayModeContainer');
+
         if (dropdown && dropdown.style.display === 'block' &&
             event.target !== toggleBtn &&
             !toggleBtn.contains(event.target) &&
             event.target !== dropdown &&
-            !dropdown.contains(event.target)) {
+            !dropdown.contains(event.target) &&
+            event.target !== container &&
+            !container.contains(event.target)) {
             dropdown.style.display = 'none';
         }
     });
 
     function payday() {
-
         typeChat('');
         typeChat('________Банковский чек________');
         typeChat('');
@@ -627,7 +731,7 @@ function chatStr() {
         const names = ['Avgust_Inmmayharti', 'Ne_Lames', 'Taro_Ledyanoy', 'Rin_Lovlya', 'Riff_Inmmayharti', 'Luffy_Taro', 'Taro_Mrachnaya'];
         let name = names[Math.floor(Math.random() * names.length)];
 
-        paydayAutoStatus = 1;
+        paydayAutoStatus = 0;
         reactionTimer = Date.now();
 
         paydayStatus = 1;
@@ -641,6 +745,7 @@ function chatStr() {
         document.getElementById('homeGos').style.display = 'block';
         document.getElementById('payday').style.display = 'block';
         document.getElementsByClassName('time')[0].style.display = 'none';
+
         if (paydayMode !== 'normal') {
             typeChat(`Taro_Ledyanoy щас разьебет тебя капчей! У вас есть ${botReactionTimes[paydayMode]}s!`);
             botAttemptCapture();
@@ -681,7 +786,7 @@ function chatStr() {
     }
 
     function firstTime() {
-        let getInput = document.getElementById('megasuperbebra').value;
+        let getInput = document.getElementById('shlepacomeback').value;
         let inputLength = getInput.length;
         if (!firstSymbolStatus) {
             if (inputLength == 1) {
@@ -699,13 +804,32 @@ function chatStr() {
             paydayAutoStatus = 0;
             typeChat('Режим Payday остановлен');
             againPayday = 0;
-            paydayDo = 1
+            paydayDo = 1;
             if (chatGenerator) {
                 chatGenerator = 0;
                 document.getElementById('chatGen').classList.remove('btnSelected');
                 typeChat('Генератор строк чата выключен');
             }
-            document.getElementById('paydayModes').style.display = 'none';
+
+            document.getElementById('paydayModeContainer').style.display = 'none';
+
+            document.getElementById('control').classList.remove('payday-mode');
+            document.getElementById('modeF').style.display = 'inline-block';
+            document.getElementById('autoZero').style.display = 'inline-block';
+            document.getElementById('firstSymbolTrain').style.display = 'inline-block';
+            document.getElementById('captchaLag').style.display = 'inline-block';
+
+            if (autoZeroStatus) {
+                document.getElementById('autoZero').classList.add('btnSelected');
+            } else {
+                document.getElementById('autoZero').classList.remove('btnSelected');
+            }
+            if (captchaLagStatus) {
+                document.getElementById('captchaLag').classList.add('btnSelected');
+            } else {
+                document.getElementById('captchaLag').classList.remove('btnSelected');
+            }
+
             paydayOff();
             if (captchaStatus) {
                 captchaClose(0);
@@ -720,6 +844,11 @@ function chatStr() {
                 captchaClose(0);
             }
             modeN();
+        }
+        if (firstSymbolTrainingStatus) {
+            firstSymbolTrainingStatus = 0;
+            document.getElementById('firstSymbolTrain').classList.remove('btnSelected');
+            typeChat('Тренировка первого символа выключена');
         }
         document.getElementById('modeP').classList.remove('btnSelected');
         document.getElementById('modeF').classList.remove('btnSelected');
@@ -740,56 +869,58 @@ function chatStr() {
             reaction = parseFloat(((Date.now() - reactionTimer) / 1000).toFixed(3))
         }
         firstSymbolStatus = 0;
-
         if (fakeStatus == 1) {
             morgen = fCaptcha
+        } else if (firstSymbolTrainingStatus) {
+            morgen = Math.floor(Math.random() * (10 - 1) + 1);
+        } else if (autoZeroStatus) {
+            morgen = Math.floor(Math.random() * (10000 - 1000) + 1000) * 10;
+        } else if (autoZeroStatus || zeroCaptchaStatus) {
+            morgen = Math.floor(Math.random() * (10000 - 1000) + 1000) * 10;
         } else {
-            morgen = Math.floor(Math.random() * (100000 - 10000) + 10000)
-        };
-
-        if (!fakeStatus && zeroCaptchaStatus) {
-            morgen = Math.floor(Math.random() * (10000 - 1000) + 1000) * 10
-        };
-
+            morgen = Math.floor(Math.random() * (100000 - 10000) + 10000);
+        }
         let canvas = document.getElementById('captchaCanvas');
         let ctx = canvas.getContext('2d');
         canvas.width = 365;
         canvas.height = 100;
         ctx.clearRect(0, 0, 365, 100);
-
         ctx.fillStyle = "#5b7c87";
         ctx.fillRect(0, 0, 365, 100);
-
         let captchaText = morgen + "";
-
-        for (let i = 0; i < captchaText.length; i++) {
+        if (firstSymbolTrainingStatus) {
             ctx.save();
-
-            let baseX = 70 + i * 60;
-            let baseY = 55;
-
-            let x = baseX + (Math.random() - 0.5) * 12;
-            let y = baseY + (Math.random() - 0.5) * 10;
-            let rotation = (Math.random() - 0.5) * 0.15;
-
-            let fontSize = 90 + Math.random() * 30;
-
+            let fontSize = 110;
             ctx.font = `bold ${fontSize}px Arial`;
             ctx.fillStyle = "#222E39";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-
-            ctx.translate(x, y);
-            ctx.rotate(rotation);
-            ctx.fillText(captchaText[i], 0, 0);
+            ctx.fillText(captchaText, canvas.width / 2, canvas.height / 2);
             ctx.restore();
+        } else {
+            for (let i = 0; i < captchaText.length; i++) {
+                ctx.save();
+                let baseX = 70 + i * 60;
+                let baseY = 55;
+                let x = baseX + (Math.random() - 0.5) * 12;
+                let y = baseY + (Math.random() - 0.5) * 10;
+                let rotation = (Math.random() - 0.5) * 0.15;
+                let fontSize = 90 + Math.random() * 30;
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.fillStyle = "#222E39";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.translate(x, y);
+                ctx.rotate(rotation);
+                ctx.fillText(captchaText[i], 0, 0);
+                ctx.restore();
+            }
         }
-
         document.getElementsByClassName('captchaDiv')[0].style.display = 'block';
         document.getElementsByClassName('typeDiv')[0].style.display = 'block';
         captchaTimer = firstSymbolTimer = Date.now();
-        document.getElementById('megasuperbebra').disabled = false;
-        document.getElementById('megasuperbebra').focus();
+        document.getElementById('shlepacomeback').disabled = false;
+        document.getElementById('shlepacomeback').focus();
     }
 
     function captchaClose(cType) {
@@ -798,39 +929,46 @@ function chatStr() {
         captchaStatus = 0;
         let captchaValid = 0;
         let timeReact = '';
-        let cValue = document.getElementById('megasuperbebra').value;
+        let cValue = document.getElementById('shlepacomeback').value;
         let captchaTime = parseFloat(((Date.now() - captchaTimer) / 1000).toFixed(3));
         let captchaData = cValue;
-
         if (!localStorage.getItem("xxAllCaptcha")) localStorage.setItem("xxAllCaptcha", "0");
         if (!localStorage.getItem("xxGoodCaptcha")) localStorage.setItem("xxGoodCaptcha", "0");
         if (!localStorage.getItem("xxCounterInputs")) localStorage.setItem("xxCounterInputs", "0");
         if (!localStorage.getItem("xxCounterFirstSymb")) localStorage.setItem("xxCounterFirstSymb", "0");
         if (!localStorage.getItem("xxAllInputs")) localStorage.setItem("xxAllInputs", "0");
         if (!localStorage.getItem("xxAllFirstSymb")) localStorage.setItem("xxAllFirstSymb", "0");
-
         if (cType == 1) {
-            captchaValid = (morgen + "" == captchaData);
-
-            let allCaptcha = parseInt(localStorage.getItem("xxAllCaptcha")) + 1;
-            localStorage.setItem("xxAllCaptcha", allCaptcha);
-
-            if (captchaValid) {
-                let goodCaptcha = parseInt(localStorage.getItem("xxGoodCaptcha")) + 1;
-                localStorage.setItem("xxGoodCaptcha", goodCaptcha);
-
-                localStorage.setItem("xxCounterInputs", parseInt(localStorage.getItem("xxCounterInputs")) + 1);
-                localStorage.setItem("xxCounterFirstSymb", parseInt(localStorage.getItem("xxCounterFirstSymb")) + 1);
-                localStorage.setItem("xxAllInputs", parseFloat(localStorage.getItem("xxAllInputs")) + captchaTime);
-                localStorage.setItem("xxAllFirstSymb", parseFloat(localStorage.getItem("xxAllFirstSymb")) + firstSymbol);
-
-                document.getElementById("average").innerText = `Средний ввод: ${(localStorage.getItem("xxAllInputs") / localStorage.getItem("xxCounterInputs")).toFixed(3)}s`;
-                document.getElementById("averageFirstSymb").innerText = `Средний ввод первого символа: ${(localStorage.getItem("xxAllFirstSymb") / localStorage.getItem("xxCounterFirstSymb")).toFixed(3)}s`;
+            let expectedCaptcha = morgen + "";
+            let userInput = captchaData;
+            if (firstSymbolTrainingStatus) {
+                captchaValid = (expectedCaptcha[0] == userInput[0]);
+                if (!localStorage.getItem("xxAllFirstSymbolCaptcha")) localStorage.setItem("xxAllFirstSymbolCaptcha", "0");
+                if (!localStorage.getItem("xxGoodFirstSymbolCaptcha")) localStorage.setItem("xxGoodFirstSymbolCaptcha", "0");
+                if (!localStorage.getItem("xxCounterFirstSymbolInputs")) localStorage.setItem("xxCounterFirstSymbolInputs", "0");
+                if (!localStorage.getItem("xxAllFirstSymbolInputs")) localStorage.setItem("xxAllFirstSymbolInputs", "0");
+                let allFirstSymbolCaptcha = parseInt(localStorage.getItem("xxAllFirstSymbolCaptcha")) + 1;
+                localStorage.setItem("xxAllFirstSymbolCaptcha", allFirstSymbolCaptcha);
+                if (captchaValid) {
+                    let goodFirstSymbolCaptcha = parseInt(localStorage.getItem("xxGoodFirstSymbolCaptcha")) + 1;
+                    localStorage.setItem("xxGoodFirstSymbolCaptcha", goodFirstSymbolCaptcha);
+                    localStorage.setItem("xxCounterFirstSymbolInputs", parseInt(localStorage.getItem("xxCounterFirstSymbolInputs")) + 1);
+                    localStorage.setItem("xxAllFirstSymbolInputs", parseFloat(localStorage.getItem("xxAllFirstSymbolInputs")) + captchaTime);
+                }
+            } else {
+                captchaValid = (expectedCaptcha == userInput);
+                let allCaptcha = parseInt(localStorage.getItem("xxAllCaptcha")) + 1;
+                localStorage.setItem("xxAllCaptcha", allCaptcha);
+                if (captchaValid) {
+                    let goodCaptcha = parseInt(localStorage.getItem("xxGoodCaptcha")) + 1;
+                    localStorage.setItem("xxGoodCaptcha", goodCaptcha);
+                    localStorage.setItem("xxCounterInputs", parseInt(localStorage.getItem("xxCounterInputs")) + 1);
+                    localStorage.setItem("xxCounterFirstSymb", parseInt(localStorage.getItem("xxCounterFirstSymb")) + 1);
+                    localStorage.setItem("xxAllInputs", parseFloat(localStorage.getItem("xxAllInputs")) + captchaTime);
+                    localStorage.setItem("xxAllFirstSymb", parseFloat(localStorage.getItem("xxAllFirstSymb")) + firstSymbol);
+                }
             }
-
-            let successRate = Math.trunc((parseInt(localStorage.getItem("xxGoodCaptcha")) / parseInt(localStorage.getItem("xxAllCaptcha"))) * 100);
-            document.getElementById("goodCaptcha").innerText = `Процент верных капч: ${successRate}%`;
-
+            updateStatisticsDisplay();
             if (paydayMode !== 'normal' && paydayStatus && captchaValid) {
                 if (captchaTime < botReactionTimes[paydayMode]) {
                     typeChat(`Ты обогнал великого Taro_Ledyanoy! Ваше время: ${captchaTime}s`);
@@ -839,16 +977,13 @@ function chatStr() {
                 }
             }
         }
-
         document.getElementsByClassName('captchaDiv')[0].style.display = 'none';
         document.getElementsByClassName('typeDiv')[0].style.display = 'none';
-        document.getElementById('megasuperbebra').value = null;
-        document.getElementById('megasuperbebra').disabled = true;
-
+        document.getElementById('shlepacomeback').value = null;
+        document.getElementById('shlepacomeback').disabled = true;
         let canvas = document.getElementById("captchaCanvas");
         let ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         if (mode == 1) {
             timeReact = ", открыта за " + reaction + "s";
             paydayOff();
@@ -858,7 +993,6 @@ function chatStr() {
                 }
             }
         };
-
         if (cType == 1) {
             let isRecord = false;
             if (captchaValid) {
@@ -869,10 +1003,13 @@ function chatStr() {
                     recordArr.push(captchaRecord);
                 }
             };
-
-            typeChat((isRecord ? "[РЕКОРД] " : "") + "Капча введена " + (captchaValid ? "" : "не") + "верно (" + morgen + '|' + captchaData + ') за ' + captchaTime + "s (первая цифра: " + (firstSymbol != 0 ? firstSymbol + "s" : "нет") + (mode == 1 ? timeReact : "") + ")");
+            if (firstSymbolTrainingStatus) {
+                let morgenString = morgen + "";
+                typeChat((isRecord ? "[РЕКОРД] " : "") + "Первый символ введен " + (captchaValid ? "" : "не") + "верно (" + morgenString[0] + '|' + (captchaData[0] || 'нет') + ') за ' + captchaTime + "s (первая цифра: " + (firstSymbol != 0 ? firstSymbol + "s" : "нет") + (mode == 1 ? timeReact : "") + ")");
+            } else {
+                typeChat((isRecord ? "[РЕКОРД] " : "") + "Капча введена " + (captchaValid ? "" : "не") + "верно (" + morgen + '|' + captchaData + ') за ' + captchaTime + "s (первая цифра: " + (firstSymbol != 0 ? firstSymbol + "s" : "нет") + (mode == 1 ? timeReact : "") + ")");
+            }
         }
-
         firstSymbol = 0;
         if (mode == 2) {
             if (modeFcaptchaRequired) {
@@ -890,13 +1027,11 @@ function chatStr() {
         document.getElementById('control').style.display = 'block';
         document.getElementById('openControl').style.display = 'none';
     }
-
     var ball = document.getElementById('houseSale');
     ball.onmousedown = function(e) {
         var coords = getCoords(ball);
         var shiftX = e.pageX - coords.left;
         var shiftY = e.pageY - coords.top;
-
         ball.style.position = 'absolute';
         document.body.appendChild(ball);
 
@@ -904,11 +1039,9 @@ function chatStr() {
             ball.style.left = e.pageX - shiftX + 'px';
             ball.style.top = e.pageY - shiftY + 'px';
         }
-
         document.onmousemove = function(e) {
             moveAt(e);
         };
-
         ball.onmouseup = function() {
             document.onmousemove = null;
             ball.onmouseup = null;
@@ -922,7 +1055,6 @@ function chatStr() {
             left: box.left + pageXOffset
         };
     }
-
     window.onload = function() {
         document.getElementById('openControl').onclick = controlOpen;
         document.getElementById('hideControl').onclick = controlHide;
@@ -960,16 +1092,14 @@ function chatStr() {
         document.querySelector('#advertisement button').onclick = function() {
             document.getElementById('advertisement').style.display = 'none';
         };
-
-        let allCaptcha = parseInt(localStorage.getItem("xxAllCaptcha") || "0");
-        let goodCaptcha = parseInt(localStorage.getItem("xxGoodCaptcha") || "0");
-        let successRate = allCaptcha > 0 ? Math.trunc((goodCaptcha / allCaptcha) * 100) : 0;
-        document.getElementById("goodCaptcha").innerText = `Процент верных капч: ${successRate}%`;
-        document.getElementById("average").innerText = `Средний ввод: ${((localStorage.getItem("xxAllInputs") || 0) / (localStorage.getItem("xxCounterInputs") || 1)).toFixed(3)}s`;
-        document.getElementById("averageFirstSymb").innerText = `Средний ввод первого символа: ${((localStorage.getItem("xxAllFirstSymb") || 0) / (localStorage.getItem("xxCounterFirstSymb") || 1)).toFixed(3)}s`;
-
-        document.getElementById('megasuperbebra').oninput = firstTime;
-
+        updateStatisticsDisplay();
+        document.getElementById('shlepacomeback').oninput = firstTime;
+        if (autoZeroStatus) {
+            document.getElementById('autoZero').classList.add('btnSelected');
+        }
+        if (captchaLagStatus) {
+            document.getElementById('captchaLag').classList.add('btnSelected');
+        }
         document.getElementById('chatInpt').addEventListener('keyup', function(e) {
             if (e.keyCode === 38) {
                 if (chatSteps == null) {
@@ -1000,13 +1130,11 @@ function chatStr() {
                 chatClose();
             };
         });
-
         document.addEventListener('keydown', function(e) {
             if (e.keyCode === 93 || (e.ctrlKey && e.shiftKey && e.keyCode === 73)) {
                 e.preventDefault();
                 return false;
             }
-
             if (changedKeyCodeNeed) {
                 e.preventDefault();
                 let blockedKeys = [17, 16, 20, 9, 8, 27, 32, 91, 18, 78];
@@ -1021,13 +1149,11 @@ function chatStr() {
                 }
                 return;
             }
-
             if (e.keyCode === 84 && !chatStatus && !captchaStatus) {
                 e.preventDefault();
                 chatOpen();
                 return;
             }
-
             if ((e.keyCode === openCaptchaKeyOne || e.keyCode === openCaptchaKeyTwo) && !captchaStatus && !chatStatus) {
                 e.preventDefault();
                 if (mode == 0) {
@@ -1086,5 +1212,7 @@ function chatStr() {
         document.getElementById('chatInpt').style.display = 'none';
         document.getElementById('chatInpt').disabled = true;
         document.getElementById('chatVisible').style.display = 'block';
+        document.getElementById('autoZero').onclick = autoZero;
+        document.getElementById('firstSymbolTrain').onclick = firstSymbolTraining;
     };
 })();
