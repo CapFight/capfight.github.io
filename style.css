@@ -633,4 +633,21 @@ body {
         right: 15px;
         font-size: 35px;
     }
+
+}
+
+.author .inspired {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 10px;
+    line-height: 1.5;
+}
+
+.author .inspired a {
+    color: #ff6b6b;
+    text-decoration: none;
+}
+
+.author .inspired a:hover {
+    text-decoration: underline;
 }
