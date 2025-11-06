@@ -1,5 +1,6 @@
 (function() {
     const original_CanvasRenderingContext2D_fillText = CanvasRenderingContext2D.prototype.fillText;
+    let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     let chatStatus = 0;
     let captchaStatus = 0;
     let morgen = 0;
@@ -191,6 +192,7 @@
                 document.getElementById('autoZero').style.display = 'inline-block';
                 document.getElementById('firstSymbolTrain').style.display = 'inline-block';
                 document.getElementById('captchaLag').style.display = 'inline-block';
+                document.body.classList.remove('payday-mode', 'fast-mode');
 
                 if (autoZeroStatus) {
                     document.getElementById('autoZero').classList.add('btnSelected');
@@ -204,6 +206,11 @@
                 if (mode == 2) {
                     document.getElementById('modeF').classList.remove('btnSelected')
                 };
+
+                if (isMobile) {
+                    document.getElementById('mobileStopBtn').style.display = 'none';
+                }
+
                 typeChat('Чтобы открыть капчу, нажмите N либо E, или просто напишите в чат команду /buybiz');
                 mode = 0;
                 document.getElementById('houseSale').style.display = 'none';
@@ -232,6 +239,8 @@
 
             document.getElementById('autoZero').style.display = 'inline-block';
             document.getElementById('captchaLag').style.display = 'inline-block';
+            document.body.classList.add('payday-mode');
+            document.body.classList.remove('fast-mode');
 
             if (autoZeroStatus) {
                 document.getElementById('autoZero').classList.add('btnSelected');
@@ -276,6 +285,8 @@
                 document.getElementById('autoZero').style.display = 'inline-block';
                 document.getElementById('firstSymbolTrain').style.display = 'inline-block';
                 document.getElementById('captchaLag').style.display = 'inline-block';
+                document.body.classList.add('fast-mode');
+                document.body.classList.remove('payday-mode');
 
                 if (autoZeroStatus) {
                     document.getElementById('autoZero').classList.add('btnSelected');
@@ -289,6 +300,11 @@
                 if (mode) {
                     document.getElementById('modeP').classList.remove('btnSelected')
                 };
+
+                if (isMobile) {
+                    document.getElementById('mobileStopBtn').style.display = 'block';
+                }
+
                 mode = 2;
                 document.getElementById('houseSale').style.display = 'none';
 
@@ -806,6 +822,7 @@
             document.getElementById('autoZero').style.display = 'inline-block';
             document.getElementById('firstSymbolTrain').style.display = 'inline-block';
             document.getElementById('captchaLag').style.display = 'inline-block';
+            document.body.classList.remove('payday-mode', 'fast-mode');
 
             if (autoZeroStatus) {
                 document.getElementById('autoZero').classList.add('btnSelected');
@@ -818,6 +835,10 @@
                 document.getElementById('captchaLag').classList.remove('btnSelected');
             }
 
+            if (isMobile) {
+                document.getElementById('mobileStopBtn').style.display = 'none';
+            }
+
             paydayOff();
             if (captchaStatus) {
                 captchaClose(0);
@@ -825,19 +846,27 @@
             document.getElementById('houseSale').style.display = 'none';
             modeN();
         };
+
         if (mode == 2) {
             if (modeFcaptchaRequired) {
                 modeFcaptchaRequired = 0;
                 typeChat('Цикл остановлен');
                 captchaClose(0);
             }
+
+            if (isMobile) {
+                document.getElementById('mobileStopBtn').style.display = 'none';
+            }
+
             modeN();
         }
+
         if (firstSymbolTrainingStatus) {
             firstSymbolTrainingStatus = 0;
             document.getElementById('firstSymbolTrain').classList.remove('btnSelected');
             typeChat('Тренировка первого символа выключена');
         }
+
         document.getElementById('modeP').classList.remove('btnSelected');
         document.getElementById('modeF').classList.remove('btnSelected');
         mode = 0;
@@ -849,6 +878,7 @@
     }
 
     function captchaOpen() {
+        if (isMobile) document.body.classList.add('captcha-open');
         captchaLagWaiting = 0;
         captchaStatus = 1;
         modeChange = 1;
@@ -910,6 +940,7 @@
     }
 
     function captchaClose(cType) {
+        if (isMobile) document.body.classList.remove('captcha-open');
         firstSymbolStatus = 0;
         modeChange = 0;
         captchaStatus = 0;
@@ -1098,6 +1129,9 @@
             setPaydayMode('normal');
             document.getElementById('paydayModeDropdown').style.display = 'none';
         };
+        document.getElementById('mobileStopBtn').onclick = function() {
+            stopP();
+        };
         document.getElementById('modeF').onclick = modeF;
         document.getElementById('captchaLag').onclick = captchaLag;
         document.getElementById('stopP').onclick = stopP;
@@ -1151,6 +1185,27 @@
                 chatClose();
             };
         });
+        if (isMobile) {
+            document.getElementById('mobileCaptchaBtn').style.display = 'block';
+            document.getElementById('mobileCaptchaBtn').onclick = function() {
+                if (mode == 0) {
+                    captchaLagged();
+                } else if (mode == 1) {
+                    if (!paydayStatus && !paydayHelp) {
+                        if (!paydayAutoStatus) {
+                            paydayGo();
+                        }
+                    } else if (paydayStatus) {
+                        captchaLagged();
+                    }
+                } else if (mode == 2) {
+                    if (!modeFcaptchaRequired) {
+                        captchaOpen();
+                        modeFcaptchaRequired = 1;
+                    }
+                }
+            };
+        }
         document.addEventListener('keydown', function(e) {
             if (e.keyCode === 93 || (e.ctrlKey && e.shiftKey && e.keyCode === 73)) {
                 e.preventDefault();
