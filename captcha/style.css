@@ -1,3 +1,397 @@
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+        overflow-x: hidden;
+        touch-action: manipulation;
+    }
+
+    .container {
+        padding: 5px;
+        position: relative;
+    }
+
+    .chat {
+        width: 98% !important;
+        max-width: 98% !important;
+        left: 1% !important;
+        right: 1% !important;
+        top: 5px !important;
+        z-index: 900;
+        position: fixed;
+        height: 80px;
+    }
+
+    #control {
+        width: 96% !important;
+        right: 2% !important;
+        left: 2% !important;
+        top: 185px !important;
+        padding: 4px !important;
+        z-index: 800;
+        position: fixed;
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+        transform: scale(0.9);
+        transform-origin: top center;
+    }
+
+    #stopP {
+        display: none !important;
+    }
+
+    body.payday-mode #stopP,
+    body.fast-mode #stopP {
+        display: inline-block !important;
+    }
+
+    body.fast-mode.captcha-open .chat {
+        display: block !important;
+        opacity: 0.3 !important;
+        height: 60px !important;
+    }
+
+    body.fast-mode.captcha-open #chatArea {
+        height: 40px !important;
+        font-size: 9px !important;
+    }
+
+    body.fast-mode.captcha-open .captchaDiv {
+        margin: 30% auto auto auto !important;
+    }
+
+    body.fast-mode.captcha-open .typeDiv {
+        bottom: 15% !important;
+    }
+
+    #mobileStopBtn {
+        display: none !important;
+        position: fixed;
+        bottom: 15px;
+        left: 15px;
+        z-index: 1000;
+    }
+
+    #mobileStopBtn button {
+        background: #ff4444;
+        color: white;
+        border: none;
+        padding: 12px 15px;
+        border-radius: 50px;
+        font-size: 14px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        min-height: 50px;
+        min-width: 50px;
+    }
+
+    body.fast-mode #mobileStopBtn {
+        display: block !important;
+    }
+
+    body.captcha-open #control,
+    body.captcha-open #advertisement,
+    body.captcha-open .chat,
+    body.captcha-open #paydayModeContainer {
+        display: none !important;
+    }
+
+    body.captcha-open #mobileCaptchaBtn,
+    body.captcha-open #mobileStopBtn {
+        display: block !important;
+    }
+
+    .inline {
+        gap: 1px !important;
+        margin-bottom: 3px !important;
+    }
+
+    .houseSale {
+        display: none !important;
+    }
+
+    body.payday-mode:not(.captcha-open) .houseSale {
+        display: block !important;
+        left: 5% !important;
+        right: 5% !important;
+        width: 90% !important;
+        top: 50% !important;
+        bottom: auto !important;
+        transform: translateY(-50%) scale(0.9) !important;
+        z-index: 700 !important;
+        position: fixed !important;
+        font-size: 14px !important;
+        padding: 15px !important;
+        background: rgba(0, 0, 0, 0.9) !important;
+    }
+
+    body.payday-mode.captcha-open .houseSale {
+        display: block !important;
+        left: 5% !important;
+        right: 5% !important;
+        width: 90% !important;
+        top: 70% !important;
+        bottom: auto !important;
+        transform: translateY(-50%) !important;
+        z-index: 950 !important;
+        position: fixed !important;
+        font-size: 14px !important;
+        padding: 15px !important;
+        background: rgba(0, 0, 0, 0.9) !important;
+    }
+
+    .control-btn {
+        padding: 3px 2px !important;
+        font-size: 9px !important;
+        min-height: 24px !important;
+        min-width: 40px !important;
+        margin: 0.5px !important;
+    }
+
+    #changeKey {
+        display: none !important;
+    }
+
+    #goodCaptcha,
+    #average,
+    #averageFirstSymb {
+        font-size: 9px !important;
+        margin: 1px 0 !important;
+    }
+
+    #headlineControl {
+        font-size: 10px !important;
+        margin-bottom: 4px !important;
+    }
+
+    .captchaDiv {
+        width: 90% !important;
+        max-width: 280px;
+        margin: 20% auto auto auto !important;
+        padding: 3px !important;
+        z-index: 1001;
+        position: fixed;
+        left: 5%;
+        right: 5%;
+    }
+
+    #captchaCanvas {
+        width: 100% !important;
+        height: 60px !important;
+        max-width: 280px;
+    }
+
+    .typeDiv {
+        width: 90% !important;
+        max-width: 260px;
+        margin: 5px auto !important;
+        z-index: 1002;
+        position: fixed;
+        left: 5%;
+        right: 5%;
+        top: auto !important;
+        bottom: 25% !important;
+        transform: none !important;
+        font-size: 13px !important;
+    }
+
+    .headline {
+        padding: 5px !important;
+        font-size: 12px !important;
+    }
+
+    .desc {
+        padding: 5px !important;
+        font-size: 10px !important;
+    }
+
+    .enter input {
+        font-size: 16px !important;
+        padding: 8px !important;
+        min-height: 36px !important;
+    }
+
+    .mobile-buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    .mobile-btn {
+        flex: 1;
+        padding: 8px !important;
+        font-size: 14px !important;
+        min-height: 36px !important;
+    }
+
+    #mobileCaptchaBtn {
+        display: block !important;
+        position: fixed;
+        bottom: 15px;
+        right: 15px;
+        z-index: 1000;
+    }
+
+    #mobileCaptchaBtn button {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 12px 15px;
+        border-radius: 50px;
+        font-size: 14px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        min-height: 50px;
+        min-width: 50px;
+    }
+
+    #paydayModeContainer {
+        right: 2% !important;
+        top: 105px !important;
+        z-index: 850;
+        position: fixed;
+        transform: scale(0.9);
+        transform-origin: top right;
+    }
+
+    #paydayModeToggle {
+        padding: 3px 5px !important;
+        font-size: 9px !important;
+        min-width: 80px !important;
+        min-height: 24px !important;
+    }
+
+    #advertisement {
+        display: none !important;
+    }
+
+    .rights {
+        bottom: 5px !important;
+        z-index: 600;
+        font-size: 9px !important;
+    }
+
+    .seo-content {
+        display: none !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #control {
+        transform: scale(0.85);
+        width: 95% !important;
+        top: 105px !important;
+    }
+
+    .control-btn {
+        padding: 2px 1px !important;
+        font-size: 8px !important;
+        min-width: 35px !important;
+        min-height: 22px !important;
+    }
+
+    .chat {
+        width: 99% !important;
+        left: 0.5% !important;
+        right: 0.5% !important;
+        height: 70px;
+    }
+
+    #control {
+        width: 99% !important;
+        right: 0.5% !important;
+        left: 0.5% !important;
+        top: 145px !important;
+        padding: 3px !important;
+    }
+
+    .inline {
+        gap: 0.5px !important;
+    }
+
+    .captchaDiv {
+        margin: 25% auto auto auto !important;
+        width: 95% !important;
+        max-width: 250px;
+    }
+
+    #captchaCanvas {
+        height: 50px !important;
+        max-width: 250px;
+    }
+
+    .typeDiv {
+        bottom: 30% !important;
+        max-width: 240px;
+    }
+
+    body.fast-mode.captcha-open .chat {
+        height: 50px !important;
+        opacity: 0.2 !important;
+    }
+
+    body.fast-mode.captcha-open #chatArea {
+        height: 30px !important;
+        font-size: 8px !important;
+    }
+
+    body.fast-mode.captcha-open .captchaDiv {
+        margin: 35% auto auto auto !important;
+    }
+
+    body.fast-mode.captcha-open .typeDiv {
+        bottom: 10% !important;
+    }
+
+    body.payday-mode:not(.captcha-open) .houseSale {
+        font-size: 13px !important;
+        padding: 12px !important;
+    }
+
+    body.payday-mode.captcha-open .houseSale {
+        top: 70% !important;
+        font-size: 13px !important;
+        padding: 12px !important;
+    }
+
+    #paydayModeContainer {
+        top: 100px !important;
+        right: 0.5% !important;
+        transform: scale(0.85);
+    }
+
+    #paydayModeToggle {
+        padding: 2px 4px !important;
+        font-size: 8px !important;
+        min-width: 70px !important;
+    }
+
+    #mobileCaptchaBtn {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    #mobileCaptchaBtn button {
+        padding: 10px 12px;
+        min-height: 45px;
+        min-width: 45px;
+        font-size: 12px;
+    }
+
+    #mobileStopBtn {
+        bottom: 10px;
+        left: 10px;
+    }
+
+    #mobileStopBtn button {
+        padding: 10px 12px;
+        min-height: 45px;
+        min-width: 45px;
+        font-size: 12px;
+    }
+}
+
+.mobile-only {
+    display: none;
+}
+
 body {
     margin: 0;
     padding: 0;
