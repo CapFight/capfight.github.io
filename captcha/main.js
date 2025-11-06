@@ -363,12 +363,12 @@
             if (chatValue == '/help') {
                 typeChat('');
                 typeChat('/help - помощь по командам');
-                typeChat('/buybiz - купить бизнес(открыть капчу командой)');
+                typeChat('/buybiz - купить бизнес (То же самое как и N / E)');
                 typeChat('/key - сбросить клавиши открытия капчи');
-                typeChat('/about - о создателе');
                 typeChat('/record - рекорды');
                 typeChat('/clear - очистить чат');
                 typeChat('/zero - последняя цифра капчи 0 (AutoZero)');
+				typeChat('/about - о создателе');
                 typeChat('/theme - сменить тему оформления');
                 typeChat('');
                 commandValid = 1
@@ -887,56 +887,124 @@
             reaction = parseFloat(((Date.now() - reactionTimer) / 1000).toFixed(3))
         }
         firstSymbolStatus = 0;
+
         if (fakeStatus == 1) {
-            morgen = fCaptcha
+            morgen = fCaptcha;
         } else if (firstSymbolTrainingStatus) {
             morgen = Math.floor(Math.random() * (10 - 1) + 1);
-        } else if (autoZeroStatus) {
-            morgen = Math.floor(Math.random() * (10000 - 1000) + 1000) * 10;
         } else {
             morgen = Math.floor(Math.random() * (100000 - 10000) + 10000);
-        }
-        let canvas = document.getElementById('captchaCanvas');
-        let ctx = canvas.getContext('2d');
-        canvas.width = 365;
-        canvas.height = 100;
-        ctx.clearRect(0, 0, 365, 100);
-        ctx.fillStyle = "#5b7c87";
-        ctx.fillRect(0, 0, 365, 100);
-        let captchaText = morgen + "";
-        if (firstSymbolTrainingStatus) {
-            ctx.save();
-            let fontSize = 110;
-            ctx.font = `bold ${fontSize}px Arial`;
-            ctx.fillStyle = "#222E39";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText(captchaText, canvas.width / 2, canvas.height / 2);
-            ctx.restore();
-        } else {
-            for (let i = 0; i < captchaText.length; i++) {
-                ctx.save();
-                let baseX = 70 + i * 60;
-                let baseY = 55;
-                let x = baseX + (Math.random() - 0.5) * 12;
-                let y = baseY + (Math.random() - 0.5) * 10;
-                let rotation = (Math.random() - 0.5) * 0.15;
-                let fontSize = 90 + Math.random() * 30;
-                ctx.font = `bold ${fontSize}px Arial`;
-                ctx.fillStyle = "#222E39";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.translate(x, y);
-                ctx.rotate(rotation);
-                ctx.fillText(captchaText[i], 0, 0);
-                ctx.restore();
+
+            if (autoZeroStatus) {
+                morgen = Math.floor(morgen / 10) * 10;
             }
         }
+
+        let canvas = document.getElementById('captchaCanvas');
+        let ctx = canvas.getContext('2d');
+
+        canvas.width = 365;
+        canvas.height = 100;
+
+        ctx.clearRect(0, 0, 340, 100);
+        ctx.fillStyle = "#5b7c87";
+        ctx.fillRect(0, 0, 340, 100);
+
+        let captchaText = morgen + "";
+
+        if (firstSymbolTrainingStatus) {
+            let digit = parseInt(captchaText[0]);
+            let posX = canvas.width / 2;
+            let posY = canvas.height / 2;
+            drawSevenSegmentDigit(ctx, digit, posX, posY, 80);
+        } else {
+            for (let i = 0; i < 5; i++) {
+                let digit = captchaText[i];
+                let posX = 50 + i * 65;
+                let posY = canvas.height / 2;
+                drawSevenSegmentDigit(ctx, parseInt(digit), posX, posY, 70);
+            }
+        }
+
         document.getElementsByClassName('captchaDiv')[0].style.display = 'block';
         document.getElementsByClassName('typeDiv')[0].style.display = 'block';
         captchaTimer = firstSymbolTimer = Date.now();
         document.getElementById('shlepacomeback').disabled = false;
         document.getElementById('shlepacomeback').focus();
+    }
+
+    function drawSevenSegmentDigit(ctx, digit, x, y, size) {
+        const segments = {
+            0: [1, 1, 1, 1, 1, 1, 0],
+            1: [0, 1, 1, 0, 0, 0, 0],
+            2: [1, 1, 0, 1, 1, 0, 1],
+            3: [1, 1, 1, 1, 0, 0, 1],
+            4: [0, 1, 1, 0, 0, 1, 1],
+            5: [1, 0, 1, 1, 0, 1, 1],
+            6: [1, 0, 1, 1, 1, 1, 1],
+            7: [1, 1, 1, 0, 0, 0, 0],
+            8: [1, 1, 1, 1, 1, 1, 1],
+            9: [1, 1, 1, 1, 0, 1, 1]
+        };
+
+        const segmentState = segments[digit] || [0, 0, 0, 0, 0, 0, 0];
+
+        const segWidth = size * 0.16;
+        const segLength = size * 0.7;
+
+        ctx.fillStyle = "#222E39";
+        ctx.strokeStyle = "#222E39";
+        ctx.lineWidth = segWidth;
+        ctx.lineCap = 'round';
+
+        if (segmentState[0]) {
+            ctx.beginPath();
+            ctx.moveTo(x - segLength / 2 + segWidth / 2, y - size / 2 + segWidth / 2);
+            ctx.lineTo(x + segLength / 2 - segWidth / 2, y - size / 2 + segWidth / 2);
+            ctx.stroke();
+        }
+
+        if (segmentState[1]) {
+            ctx.beginPath();
+            ctx.moveTo(x + segLength / 2 - segWidth / 2, y - size / 2 + segWidth);
+            ctx.lineTo(x + segLength / 2 - segWidth / 2, y - segWidth / 2);
+            ctx.stroke();
+        }
+
+        if (segmentState[2]) {
+            ctx.beginPath();
+            ctx.moveTo(x + segLength / 2 - segWidth / 2, y + segWidth / 2);
+            ctx.lineTo(x + segLength / 2 - segWidth / 2, y + size / 2 - segWidth);
+            ctx.stroke();
+        }
+
+        if (segmentState[3]) {
+            ctx.beginPath();
+            ctx.moveTo(x - segLength / 2 + segWidth / 2, y + size / 2 - segWidth / 2);
+            ctx.lineTo(x + segLength / 2 - segWidth / 2, y + size / 2 - segWidth / 2);
+            ctx.stroke();
+        }
+
+        if (segmentState[4]) {
+            ctx.beginPath();
+            ctx.moveTo(x - segLength / 2 + segWidth / 2, y + segWidth / 2);
+            ctx.lineTo(x - segLength / 2 + segWidth / 2, y + size / 2 - segWidth);
+            ctx.stroke();
+        }
+
+        if (segmentState[5]) {
+            ctx.beginPath();
+            ctx.moveTo(x - segLength / 2 + segWidth / 2, y - size / 2 + segWidth);
+            ctx.lineTo(x - segLength / 2 + segWidth / 2, y - segWidth / 2);
+            ctx.stroke();
+        }
+
+        if (segmentState[6]) {
+            ctx.beginPath();
+            ctx.moveTo(x - segLength / 2 + segWidth / 2, y);
+            ctx.lineTo(x + segLength / 2 - segWidth / 2, y);
+            ctx.stroke();
+        }
     }
 
     function captchaClose(cType) {
@@ -1025,7 +1093,7 @@
                 let morgenString = morgen + "";
                 typeChat((isRecord ? "[РЕКОРД] " : "") + "Первый символ введен " + (captchaValid ? "" : "не") + "верно (" + morgenString[0] + '|' + (captchaData[0] || 'нет') + ') за ' + captchaTime + "s (первая цифра: " + (firstSymbol != 0 ? firstSymbol + "s" : "нет") + (mode == 1 ? timeReact : "") + ")");
             } else {
-                typeChat((isRecord ? "[РЕКОРД] " : "") + "Капча введена " + (captchaValid ? "" : "не") + "верно (" + morgen + '|' + captchaData + ') за ' + captchaTime + "s (первая цифра: " + (firstSymbol != 0 ? firstSymbol + "s" : "нет") + (mode == 1 ? timeReact : "") + ")");
+                typeChat((isRecord ? "[РЕКОРД] " : "") + "Капча введена " + (captchaValid ? "" : "не") + "верно (" + expectedCaptcha + '|' + captchaData + ') за ' + captchaTime + "s (первая цифра: " + (firstSymbol != 0 ? firstSymbol + "s" : "нет") + (mode == 1 ? timeReact : "") + ")");
             }
         }
 
