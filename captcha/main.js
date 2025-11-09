@@ -382,7 +382,9 @@
                 commandValid = 1
             };
             if (chatValue == '/about') {
-                typeChat('Автор данного произведения: Luffich ');
+                typeChat('Автор: Luffich ');
+				typeChat('Вдохновлён проектом Josip & kizn ');
+				typeChat('база взята с XSoft и переработана под современный дизайн и функционал ');
                 commandValid = 1
             };
             if (chatValue == '/record') {
@@ -1350,7 +1352,6 @@
 
         modeN();
         typeChat("Добро пожаловать!");
-        typeChat("Автор: Luffich");
         typeChat("Используйте /help для списка команд");
 
         document.getElementById('chatInpt').style.display = 'none';
